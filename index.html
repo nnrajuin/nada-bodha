@@ -536,44 +536,120 @@ const MALAHARI_Y_LABELS = [
 ];
 const PITCH_CONFIG_MALAHARI = { min:0.0, max:7.0, labels:MALAHARI_Y_LABELS };
 
-/* Corrected Adi Tala (8-beat):
-   Laghu (4): Clap Pinky Ring Middle
-   Dhrutam×2: Clap Wave                  */
-const ADI_TALA = [
-    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
-    {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
-    {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
-    {type:'middle', lbl:'Middle', sol:'na',  samam:false},
-    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
-    {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
-    {type:'clap',   lbl:'Clap',   sol:'di',  samam:false},
-    {type:'wave',   lbl:'Wave',   sol:'mi',  samam:false},
-];
-
-/* Additional tala patterns */
-const TALA_ROOPAKA = [
-    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
-    {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
-    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
-    {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
-    {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
-    {type:'middle', lbl:'Middle', sol:'na',  samam:false},
-];
-const TALA_TRIPUTA = [
-    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
-    {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
-    {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
-    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
-    {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
-    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
-    {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
-];
-const TALA_EKA = [
-    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
-    {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
-    {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
-    {type:'middle', lbl:'Middle', sol:'na',  samam:false},
-];
+/* Tala patterns — each has beatsPerRow, groups[], and beats[] */
+const ADI_TALA = {
+    beatsPerRow: 8, groups: [4, 2, 2],
+    beats: [
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'di',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'mi',  samam:false},
+    ]
+};
+const TALA_ROOPAKA = {
+    beatsPerRow: 6, groups: [2, 4],
+    beats: [
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+    ]
+};
+const TALA_TRIPUTA = {
+    beatsPerRow: 7, groups: [3, 2, 2],
+    beats: [
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+    ]
+};
+const TALA_EKA = {
+    beatsPerRow: 4, groups: [4],
+    beats: [
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+    ]
+};
+const TALA_DHRUVA = {
+    beatsPerRow: 14, groups: [4, 2, 4, 4],
+    beats: [
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+    ]
+};
+const TALA_MATYA = {
+    beatsPerRow: 10, groups: [4, 2, 4],
+    beats: [
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+    ]
+};
+const TALA_JHAMPA = {
+    beatsPerRow: 10, groups: [7, 1, 2],
+    beats: [
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+    ]
+};
+const TALA_ATA = {
+    beatsPerRow: 14, groups: [5, 5, 2, 2],
+    beats: [
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+        {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+        {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+        {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+        {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+    ]
+};
 
 /* Just-intonation frequencies, Sa = 196 Hz */
 const FREQ = {
@@ -606,6 +682,8 @@ let audioCtx         = null;
 let activeOscillators = [];
 let lastPlayedFreq   = null;
 let currentTalaPattern = ADI_TALA;
+let currentBeatsPerRow = 8;
+let currentTalaGroups  = [4, 2, 2];
 let currentBPM       = 90;
 let currentMult      = 1;
 let noteDuration     = Math.round(60000 / 90);  // ms per note
@@ -613,7 +691,7 @@ let noteDuration     = Math.round(60000 / 90);  // ms per note
 /* ══════════════════════════════════════
    COORDINATE HELPERS
 ══════════════════════════════════════ */
-function xFor(beat) { return PL + (beat / 7) * PLOT_W; }
+function xFor(beat) { return PL + (beat / (currentBeatsPerRow - 1)) * PLOT_W; }
 function yFor(pitch){ return PT + (1 - (pitch - currentPitchConfig.min)/(currentPitchConfig.max - currentPitchConfig.min)) * PLOT_H; }
 
 /* ══════════════════════════════════════
@@ -668,7 +746,7 @@ function playTone(label) {
 function playMetro(noteIdx) {
     if (!metroOn) return;
     const ctx = getAudioCtx(), now = ctx.currentTime + 0.005;
-    const N = currentTalaPattern ? currentTalaPattern.length : 8;
+    const N = currentTalaPattern ? currentTalaPattern.beats.length : 8;
     const isDown = (noteIdx % N === 0);
     const osc = ctx.createOscillator(), gain = ctx.createGain();
     osc.type = 'square';
@@ -810,7 +888,7 @@ function buildChartSection(notes) {
     canvases = []; rows = [];
     buildPulseBar();
 
-    for (let i = 0; i < notes.length; i += 8) rows.push(notes.slice(i, i+8));
+    for (let i = 0; i < notes.length; i += currentBeatsPerRow) rows.push(notes.slice(i, i+currentBeatsPerRow));
 
     rows.forEach((rowNotes, ri) => {
         const rowDiv = document.createElement('div');
@@ -840,13 +918,10 @@ function buildFixedHandsRow() {
     fixedHandEls = [];
     handsDiv.style.width = CW + 'px';
     const pat = currentTalaPattern || ADI_TALA;
-    const N = pat.length;
-    /* Center fewer-than-8 hands horizontally across the beat grid */
-    const offset = (8 - N) / 2;
-    pat.forEach((beat, bi) => {
+    pat.beats.forEach((beat, bi) => {
         const hd = document.createElement('div');
         hd.className = 'hand';
-        hd.style.left = xFor(offset + bi) + 'px';
+        hd.style.left = xFor(bi) + 'px';
         hd.innerHTML =
             `<div class="hand-glow"></div>` +
             buildHandSVG(beat.type) +
@@ -942,23 +1017,27 @@ function drawRow(ctx, rowNotes, rowIdx, totalRows, activeInRow, pulse) {
     });
 
     /* Vertical grid + beat labels */
-    for (let b = 0; b <= 7; b++) {
+    for (let b = 0; b < currentBeatsPerRow; b++) {
         const x = xFor(b);
         ctx.beginPath(); ctx.strokeStyle = '#DDD4C8'; ctx.lineWidth = .8;
         ctx.setLineDash([4,4]); ctx.moveTo(x, PT); ctx.lineTo(x, PT+PLOT_H); ctx.stroke();
         ctx.setLineDash([]);
         ctx.fillStyle = '#5C2E0A'; ctx.font = '10px Georgia, serif';
         ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-        ctx.fillText(b + 1, x, PT + PLOT_H + 28);  // beats 1–8, 28px below baseline
+        ctx.fillText(b + 1, x, PT + PLOT_H + 28);
     }
 
-    /* Adi Tala bar separators */
-    [3.5, 5.5].forEach(bx => {
-        const x = xFor(bx);
-        ctx.beginPath(); ctx.strokeStyle = '#B87030'; ctx.lineWidth = 1;
-        ctx.setLineDash([5,3]); ctx.moveTo(x, PT); ctx.lineTo(x, PT+PLOT_H); ctx.stroke();
-        ctx.setLineDash([]);
-    });
+    /* Tala group dividers — at boundaries between groups */
+    let cumBeat = 0;
+    for (let gi = 0; gi < currentTalaGroups.length - 1; gi++) {
+        cumBeat += currentTalaGroups[gi];
+        const x = PL + ((cumBeat - 0.5) / (currentBeatsPerRow - 1)) * PLOT_W;
+        ctx.save();
+        ctx.globalAlpha = 0.8;
+        ctx.beginPath(); ctx.strokeStyle = '#C8A97E'; ctx.lineWidth = 1;
+        ctx.setLineDash([5,4]); ctx.moveTo(x, PT); ctx.lineTo(x, PT+PLOT_H); ctx.stroke();
+        ctx.setLineDash([]); ctx.restore();
+    }
 
     /* Axes */
     ctx.strokeStyle = '#8B4513'; ctx.lineWidth = 1.5;
@@ -1130,8 +1209,8 @@ function render() {
     const pulse = Math.sin(glowAngle) * 0.5 + 0.5;
     rows.forEach((rowNotes, ri) => {
         const ctx = canvases[ri].getContext('2d');
-        const gs  = ri * 8;
-        const activeInRow = (currentGlobalIdx >= gs && currentGlobalIdx < gs+8)
+        const gs  = ri * currentBeatsPerRow;
+        const activeInRow = (currentGlobalIdx >= gs && currentGlobalIdx < gs+currentBeatsPerRow)
             ? currentGlobalIdx - gs : -1;
         drawRow(ctx, rowNotes, ri, rows.length, activeInRow, pulse);
     });
@@ -1143,9 +1222,9 @@ function render() {
 function setActiveHand(gIdx) {
     fixedHandEls.forEach(h => h.classList.remove('active'));
     if (gIdx < 0) { pulseDots.forEach(d => d.classList.remove('active')); return; }
-    const N  = fixedHandEls.length || 8;
-    const ri = Math.floor(gIdx / 8);   // canvas rows always chunk at 8
-    const bi = gIdx % N;               // hand beat within tala cycle
+    const N  = fixedHandEls.length || currentBeatsPerRow;
+    const ri = Math.floor(gIdx / currentBeatsPerRow);
+    const bi = gIdx % N;
     if (!fixedHandEls[bi]) return;
     const el = fixedHandEls[bi];
     el.classList.remove('active'); void el.offsetWidth; el.classList.add('active');
@@ -1218,11 +1297,19 @@ function doReset() {
 ══════════════════════════════════════ */
 function buildLineHTML(notes) {
     const parts = [];
+    const bpr = currentBeatsPerRow;
+    /* Build separator positions (1-indexed within cycle) from tala group boundaries */
+    const sepPos = new Set();
+    let cum = 0;
+    for (let g = 0; g < currentTalaGroups.length - 1; g++) {
+        cum += currentTalaGroups[g];
+        sepPos.add(cum);
+    }
     notes.forEach((note, i) => {
-        const pos = (i % 8) + 1;
+        const pos = (i % bpr) + 1;
         if (pos === 1 && i > 0) parts.push('<span class="dbl-bar"> ||</span>');
         parts.push(`<span class="vnote">${note.label}</span>`);
-        if (pos === 4 || pos === 6) parts.push('<span class="sep">|</span>');
+        if (sepPos.has(pos)) parts.push('<span class="sep">|</span>');
     });
     parts.push('<span class="dbl-bar"> ||</span>');
     return parts.join('\u2009');
@@ -1527,7 +1614,7 @@ function buildPulseBar() {
     const outer = document.getElementById('pulseBarOuter');
     outer.innerHTML = '';
     pulseDots = [];
-    const N = currentTalaPattern ? currentTalaPattern.length : 8;
+    const N = currentTalaPattern ? currentTalaPattern.beats.length : 8;
     for (let i = 0; i < N; i++) {
         const d = document.createElement('div');
         d.className = 'pulse-dot';
@@ -1537,10 +1624,18 @@ function buildPulseBar() {
 }
 function setTalaPattern(talaStr) {
     const t = (talaStr || '').toLowerCase();
-    if      (t.includes('roopaka') || t.includes('rupaka')) currentTalaPattern = TALA_ROOPAKA;
-    else if (t.includes('triputa'))                          currentTalaPattern = TALA_TRIPUTA;
-    else if (t.includes('eka'))                              currentTalaPattern = TALA_EKA;
-    else                                                     currentTalaPattern = ADI_TALA;
+    let pat;
+    if      (t.includes('roopaka') || t.includes('rupaka')) pat = TALA_ROOPAKA;
+    else if (t.includes('triputa'))                          pat = TALA_TRIPUTA;
+    else if (t.includes('eka'))                              pat = TALA_EKA;
+    else if (t.includes('dhruva'))                           pat = TALA_DHRUVA;
+    else if (t.includes('matya'))                            pat = TALA_MATYA;
+    else if (t.includes('jhampa'))                           pat = TALA_JHAMPA;
+    else if (t.includes('ata'))                              pat = TALA_ATA;
+    else                                                     pat = ADI_TALA;
+    currentTalaPattern = pat;
+    currentBeatsPerRow = pat.beatsPerRow;
+    currentTalaGroups  = pat.groups;
 }
 
 function setPulseDot(beatIdx) {
