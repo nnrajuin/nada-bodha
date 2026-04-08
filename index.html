@@ -805,93 +805,110 @@ function stopShruti() {
 }
 
 /* ══════════════════════════════════════
-   REALISTIC HAND SVG BUILDER
-   ViewBox: 0 0 48 56
-   Skin: #D4956A  Stroke: #A0623A
+   HAND SVG BUILDER — clean line-art
+   ViewBox: 0 0 44 54
+   Skin: #DEB887  Stroke: #8B6914
+   Open (clap/wave): all fingers extended
+   Fist types: compact fist + one finger up
 ══════════════════════════════════════ */
 function buildHandSVG(type) {
-    const SK  = '#D4956A';
-    const SKW = '#DDA870';   // lighter for wave (palm face)
-    const ST  = '#A0623A';
-    const fill = type === 'wave' ? SKW : SK;
+    const FL  = '#DEB887';           // warm burlywood fill
+    const FLW = '#EDD9A3';           // lighter fill for wave (palm-up)
+    const ST  = '#8B6914';           // dark amber stroke
+    const S   = `stroke="${ST}" stroke-width="1.2"`;
+    const fill = (type === 'wave') ? FLW : FL;
 
-    /* Anatomical constants */
-    const PALM_Y  = 30;     // top of palm rect
-    const FNG_BOT = 34;     // finger rects end here (4px into palm)
-    const CURL_Y  = 26;     // curled finger stub starts here
+    const isOpen = (type === 'clap' || type === 'wave');
 
-    /* Finger definitions [x, tipY when full, width] */
-    const FDEFS = {
-        index:  {x: 9,  ty:10, w:7, rx:3.5},
-        middle: {x:18,  ty: 6, w:7, rx:3.5},
-        ring:   {x:27,  ty: 9, w:7, rx:3.5},
-        pinky:  {x:36,  ty:14, w:6, rx:3.0},
-    };
-
-    const isClap = type === 'clap', isWave = type === 'wave';
-    const ext = {
-        index:  isClap || isWave,
-        middle: isClap || isWave || type === 'middle',
-        ring:   isClap || isWave || type === 'ring',
-        pinky:  isClap || isWave || type === 'pinky',
-    };
+    /* Finger geometry: [x, tipY-open, width, rx] */
+    const FG = [
+        {x: 8, ty: 8,  w: 6.5, rx: 3.25, name:'index' },
+        {x:17, ty: 4,  w: 6.5, rx: 3.25, name:'middle'},
+        {x:26, ty: 7,  w: 6.5, rx: 3.25, name:'ring'  },
+        {x:35, ty:13,  w: 5.5, rx: 2.75, name:'pinky' },
+    ];
+    /* Which finger is raised in fist modes */
+    const raiseIdx = {pinky:3, ring:2, middle:1}[type] ?? -1;
 
     let out = '';
 
-    /* 1 — Finger rects (drawn before palm so palm covers bottoms) */
-    Object.entries(FDEFS).forEach(([k, f]) => {
-        const tipY = ext[k] ? f.ty : CURL_Y;
-        const h    = FNG_BOT - tipY;
-        out += `<rect x="${f.x}" y="${tipY}" width="${f.w}" height="${h}" rx="${f.rx}" fill="${fill}" stroke="${ST}" stroke-width="1.2"/>`;
-    });
-
-    /* 2 — Thumb (drawn before palm so palm merges with base) */
-    out += `<rect x="2" y="25" width="7" height="15" rx="3.5" fill="${fill}" stroke="${ST}" stroke-width="1.2"/>`;
-
-    /* 3 — Palm rect (covers finger/thumb bottoms) */
-    out += `<rect x="4" y="${PALM_Y}" width="39" height="18" rx="8" fill="${fill}" stroke="${ST}" stroke-width="1.2"/>`;
-
-    /* 4 — Palm crease line */
-    out += `<path d="M11,${PALM_Y+7} Q24,${PALM_Y+4} 38,${PALM_Y+7}" fill="none" stroke="${ST}" stroke-width=".55" opacity=".7"/>`;
-
-    /* 5 — Joint lines on EXTENDED fingers (drawn after palm → visible above palm) */
-    Object.entries(FDEFS).forEach(([k, f]) => {
-        if (ext[k]) {
-            const vis = PALM_Y - f.ty;
-            const j1  = +(f.ty + vis / 3).toFixed(0);
-            const j2  = +(f.ty + vis * 2 / 3).toFixed(0);
+    if (isOpen) {
+        /* ── OPEN HAND (clap / wave) ── */
+        /* Fingers — drawn before palm so palm covers their bases */
+        FG.forEach(f => {
+            out += `<rect x="${f.x}" y="${f.ty}" width="${f.w}" height="${28 - f.ty}" rx="${f.rx}" fill="${fill}" ${S}/>`;
+        });
+        /* Thumb */
+        out += `<rect x="1" y="21" width="6" height="12" rx="3" fill="${fill}" ${S}/>`;
+        /* Palm */
+        out += `<rect x="2" y="27" width="40" height="17" rx="7" fill="${fill}" ${S}/>`;
+        /* Joint lines on each finger */
+        FG.forEach(f => {
+            const vis = 27 - f.ty;
+            const j1 = +(f.ty + vis / 3).toFixed(1);
+            const j2 = +(f.ty + vis * 2 / 3).toFixed(1);
             out += `<line x1="${f.x+1}" y1="${j1}" x2="${f.x+f.w-1}" y2="${j1}" stroke="${ST}" stroke-width=".6" stroke-linecap="round"/>`;
             out += `<line x1="${f.x+1}" y1="${j2}" x2="${f.x+f.w-1}" y2="${j2}" stroke="${ST}" stroke-width=".6" stroke-linecap="round"/>`;
-        } else {
-            /* Knuckle arch on curled finger */
-            const hw = f.w / 2;
-            out += `<path d="M${f.x},${CURL_Y+4} Q${f.x+hw},${CURL_Y-1} ${f.x+f.w},${CURL_Y+4}" fill="none" stroke="${ST}" stroke-width=".75" stroke-linecap="round"/>`;
+        });
+        /* Thumb joint */
+        out += `<line x1="2" y1="27" x2="7" y2="27" stroke="${ST}" stroke-width=".6" stroke-linecap="round"/>`;
+    } else {
+        /* ── FIST with one raised finger ── */
+        const rf = raiseIdx >= 0 ? FG[raiseIdx] : null;
+
+        /* Raised finger (drawn before fist-top so fist covers its base) */
+        if (rf) {
+            const rh = 22;  // total height of raised finger
+            out += `<rect x="${rf.x}" y="${rf.ty}" width="${rf.w}" height="${rh}" rx="${rf.rx}" fill="${FL}" ${S}/>`;
+            /* Two joint lines on raised finger */
+            const j1 = +(rf.ty + rh / 3).toFixed(1);
+            const j2 = +(rf.ty + 2 * rh / 3).toFixed(1);
+            out += `<line x1="${rf.x+1}" y1="${j1}" x2="${rf.x+rf.w-1}" y2="${j1}" stroke="${ST}" stroke-width=".6" stroke-linecap="round"/>`;
+            out += `<line x1="${rf.x+1}" y1="${j2}" x2="${rf.x+rf.w-1}" y2="${j2}" stroke="${ST}" stroke-width=".6" stroke-linecap="round"/>`;
         }
-    });
 
-    /* 6 — Thumb joint line */
-    out += `<line x1="3" y1="29" x2="8" y2="29" stroke="${ST}" stroke-width=".6" stroke-linecap="round"/>`;
-
-    /* 7 — Direction chevron (clap = down ↓, wave = up ↑) */
-    if (isClap) {
-        out += `<path d="M14,49 L24,54 L34,49" fill="none" stroke="${ST}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
-    } else if (isWave) {
-        out += `<path d="M14,54 L24,49 L34,54" fill="none" stroke="${ST}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+        /* Fist knuckle bar */
+        out += `<rect x="5" y="17" width="33" height="13" rx="5" fill="${FL}" ${S}/>`;
+        /* Knuckle arches for curled fingers */
+        FG.forEach((f, i) => {
+            if (i === raiseIdx) return;
+            const hw = f.w / 2;
+            out += `<path d="M${f.x},22 Q${f.x+hw},17 ${f.x+f.w},22" fill="none" stroke="${ST}" stroke-width=".85" stroke-linecap="round"/>`;
+        });
+        /* Thumb */
+        out += `<rect x="1" y="21" width="6" height="12" rx="3" fill="${FL}" ${S}/>`;
+        /* Palm */
+        out += `<rect x="2" y="27" width="40" height="17" rx="7" fill="${FL}" ${S}/>`;
+        /* Thumb joint */
+        out += `<line x1="2" y1="27" x2="7" y2="27" stroke="${ST}" stroke-width=".6" stroke-linecap="round"/>`;
     }
 
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 56" width="48" height="56">${out}</svg>`;
+    /* Palm crease */
+    out += `<path d="M10,34 Q22,31 38,34" fill="none" stroke="${ST}" stroke-width=".55" opacity=".7"/>`;
+
+    /* Direction chevron — clap ↓, wave ↑ */
+    if (type === 'clap') {
+        out += `<path d="M13,46 L22,51 L31,46" fill="none" stroke="${ST}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    } else if (type === 'wave') {
+        out += `<path d="M13,50 L22,45 L31,50" fill="none" stroke="${ST}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 44 54" width="44" height="54" style="filter:drop-shadow(1px 2px 3px rgba(0,0,0,0.15))">${out}</svg>`;
 }
 
 /* ══════════════════════════════════════
    BUILD CHART SECTION
 ══════════════════════════════════════ */
 function buildChartSection(notes) {
+    /* Keep notesPerRow in sync with current tala + kala */
+    notesPerRow = Math.max(1, Math.round(currentBeatsPerRow * currentMult));
+
     const container = document.getElementById('chartsContainer');
     container.innerHTML = '';
     canvases = []; rows = [];
     buildPulseBar();
 
-    for (let i = 0; i < notes.length; i += currentBeatsPerRow) rows.push(notes.slice(i, i+currentBeatsPerRow));
+    for (let i = 0; i < notes.length; i += notesPerRow) rows.push(notes.slice(i, i + notesPerRow));
 
     rows.forEach((rowNotes, ri) => {
         const rowDiv = document.createElement('div');
@@ -1019,9 +1036,15 @@ function drawRow(ctx, rowNotes, rowIdx, totalRows, activeInRow, pulse) {
         ctx.fillText(yl.name, PL - 4, y);
     });
 
-    /* Vertical grid + beat labels */
+    /* Vertical grid + beat labels
+       At kala 1×: 8 lines at beat indices 0-7.
+       At kala 2×: same 8 lines, note positions doubled.
+       At kala ½×: only 4 lines (beats 0,2,4,6 map to notes 0,1,2,3).
+       Skip beats where note index is fractional. */
     for (let b = 0; b < currentBeatsPerRow; b++) {
-        const x = xFor(b);
+        const ni = b * currentMult;          // note index for this beat
+        if (ni !== Math.floor(ni)) continue; // skip fractional (½× case)
+        const x = xForNote(ni);
         ctx.beginPath(); ctx.strokeStyle = '#DDD4C8'; ctx.lineWidth = .8;
         ctx.setLineDash([4,4]); ctx.moveTo(x, PT); ctx.lineTo(x, PT+PLOT_H); ctx.stroke();
         ctx.setLineDash([]);
@@ -1030,11 +1053,19 @@ function drawRow(ctx, rowNotes, rowIdx, totalRows, activeInRow, pulse) {
         ctx.fillText(b + 1, x, PT + PLOT_H + 28);
     }
 
-    /* Tala group dividers — at boundaries between groups */
+    /* Kala indicator — shown top-right when not 1× */
+    if (currentMult !== 1) {
+        const kLbl = currentMult < 1 ? '\u00BD\u00D7' : '\u00D7' + Math.round(currentMult);
+        ctx.fillStyle = '#8B4513'; ctx.font = 'bold 9px Georgia, serif';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+        ctx.fillText(kLbl, CW - 4, 3);
+    }
+
+    /* Tala group dividers — always at proportional beat positions, kala-independent */
     let cumBeat = 0;
     for (let gi = 0; gi < currentTalaGroups.length - 1; gi++) {
         cumBeat += currentTalaGroups[gi];
-        const x = PL + ((cumBeat - 0.5) / (currentBeatsPerRow - 1)) * PLOT_W;
+        const x = PL + (cumBeat / currentBeatsPerRow) * PLOT_W;
         ctx.save();
         ctx.globalAlpha = 0.8;
         ctx.beginPath(); ctx.strokeStyle = '#C8A97E'; ctx.lineWidth = 1;
@@ -1050,7 +1081,7 @@ function drawRow(ctx, rowNotes, rowIdx, totalRows, activeInRow, pulse) {
     if (rowNotes.length > 1) {
         ctx.beginPath(); ctx.strokeStyle = '#4A90D9'; ctx.lineWidth = 1.5; ctx.lineJoin = 'round';
         rowNotes.forEach((note, i) => {
-            const x = xFor(i), y = yFor(note.pitch);
+            const x = xForNote(i), y = yFor(note.pitch);
             if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
         });
         ctx.stroke();
@@ -1058,7 +1089,7 @@ function drawRow(ctx, rowNotes, rowIdx, totalRows, activeInRow, pulse) {
 
     /* Dots + labels — 5px radius, 11px font */
     rowNotes.forEach((note, i) => {
-        const x = xFor(i), y = yFor(note.pitch);
+        const x = xForNote(i), y = yFor(note.pitch);
         const isActive  = i === activeInRow;
         const isSustain = note.label === '-';
 
@@ -1152,7 +1183,7 @@ function drawRow(ctx, rowNotes, rowIdx, totalRows, activeInRow, pulse) {
 
     /* Double bar line after last note on the LAST row */
     if (rowIdx === totalRows - 1 && rowNotes.length > 0) {
-        const lastX = xFor(rowNotes.length - 1) + 8;
+        const lastX = xForNote(rowNotes.length - 1) + 8;
         ctx.strokeStyle = 'rgba(139,69,19,0.7)';
         ctx.lineWidth = 2; ctx.setLineDash([]);
         ctx.beginPath(); ctx.moveTo(lastX,     PT); ctx.lineTo(lastX,     PT+PLOT_H); ctx.stroke();
@@ -1212,8 +1243,8 @@ function render() {
     const pulse = Math.sin(glowAngle) * 0.5 + 0.5;
     rows.forEach((rowNotes, ri) => {
         const ctx = canvases[ri].getContext('2d');
-        const gs  = ri * currentBeatsPerRow;
-        const activeInRow = (currentGlobalIdx >= gs && currentGlobalIdx < gs+currentBeatsPerRow)
+        const gs  = ri * notesPerRow;
+        const activeInRow = (currentGlobalIdx >= gs && currentGlobalIdx < gs + notesPerRow)
             ? currentGlobalIdx - gs : -1;
         drawRow(ctx, rowNotes, ri, rows.length, activeInRow, pulse);
     });
@@ -1226,7 +1257,7 @@ function setActiveHand(gIdx, beatAbsolute) {
     fixedHandEls.forEach(h => h.classList.remove('active'));
     if (gIdx < 0) { pulseDots.forEach(d => d.classList.remove('active')); return; }
     const N  = fixedHandEls.length || currentBeatsPerRow;
-    const ri = Math.floor(gIdx / currentBeatsPerRow);
+    const ri = Math.floor(gIdx / notesPerRow);
     const bi = (beatAbsolute !== undefined) ? (beatAbsolute % N) : (gIdx % N);
     if (!fixedHandEls[bi]) return;
     const el = fixedHandEls[bi];
@@ -1693,6 +1724,7 @@ function setPulseDot(beatIdx) {
 
 function updateBPM() {
     noteDuration = Math.round(60000 / currentBPM / currentMult);
+    notesPerRow  = Math.max(1, Math.round(currentBeatsPerRow * currentMult));
     const k = Object.values(KALA_MAP).find(v => v.mult === currentMult) || KALA_MAP['1'];
     document.getElementById('bpmDisplay').textContent =
         '\u2669 = ' + currentBPM + ' BPM \u00B7 ' + k.name + ' Kala (' + k.desc + ')';
@@ -1713,6 +1745,11 @@ document.querySelectorAll('.speed-btn').forEach(btn => {
         document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         updateBPM();
+        /* Rebuild chart rows with new note density */
+        if (currentNotes.length > 0 && !placeholderMode) {
+            buildChartSection(currentNotes);
+            render();
+        }
     });
 });
 
