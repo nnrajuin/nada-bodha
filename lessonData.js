@@ -18,6 +18,7 @@ const _P = {
 function MN(l) { return { label: l, pitch: _P[l] }; }
 const [s, r, g, m, p, d, n, S] = ['s','r','g','m','p','d','n', S_HI].map(MN);
 const r_hi = MN(R_HI);   // upper-octave Ri
+const _  = {label:'-', pitch:0}; // hold/sustain — pitch filled at load time
 
 /* ── Malahari pitch map (Geethams) ────────────────────────── */
 // Aroha: S R M P D S' (R' in extended); Ga/Ni present in avaroha
@@ -31,50 +32,92 @@ function ML(l, ly)  { return { label: l, pitch: _PM[l], lyric: ly }; }
 
 /* ════════════════════════════════════════════════════════════
    GRADE 1 — SARALI VARISAI  (14 distinct verses, Mayamalavagowla)
+   Each verse is a flat notes array; 8 notes = 1 tala cycle (Adi).
+   Sustain pitches ('-') are resolved at load time in index.html.
 ════════════════════════════════════════════════════════════ */
 const SARALI_VERSES = [
   { title:'Verse 1',
-    line1:[s,r,g,m,p,d,n,S],
-    line2:[S,n,d,p,m,g,r,s] },
+    notes:[s,r,g,m,p,d,n,S,
+           S,n,d,p,m,g,r,s] },
+
   { title:'Verse 2',
-    line1:[s,r,s,r,s,r,g,m,p,d,n,S],
-    line2:[S,n,S,n,S,n,d,p,m,g,r,s] },
+    notes:[s,r,s,r,s,r,g,m,
+           p,d,n,S,S,n,S,n,
+           S,n,d,p,m,g,r,s] },
+
   { title:'Verse 3',
-    line1:[s,r,g,s,r,g,s,r,g,m,p,d,n,S],
-    line2:[S,n,d,S,n,d,S,n,d,p,m,g,r,s] },
+    notes:[s,r,g,s,r,g,s,r,
+           g,m,p,d,n,S,S,n,
+           d,p,m,g,r,s,s,s] },
+
   { title:'Verse 4',
-    line1:[s,r,g,m,s,r,g,m,s,r,g,m,p,d,n,S],
-    line2:[S,n,d,p,S,n,d,p,m,g,r,s] },
+    notes:[s,r,g,m,s,r,g,m,
+           p,d,n,S,p,d,n,S,
+           S,n,d,p,S,n,d,p,
+           m,g,r,s,m,g,r,s] },
+
   { title:'Verse 5',
-    line1:[s,r,g,m,p,s,r,g,m,p,d,n,S],
-    line2:[S,n,d,p,m,S,n,d,p,m,g,r,s] },
+    notes:[s,r,g,m,p,_,s,r,
+           g,m,p,d,n,S,_,_,
+           S,n,d,p,m,_,S,n,
+           d,p,m,g,r,s,_,_] },
+
   { title:'Verse 6',
-    line1:[s,r,g,m,p,d,s,r,g,m,p,d,n,S],
-    line2:[S,n,d,p,m,g,S,n,d,p,m,g,r,s] },
+    notes:[s,r,g,m,p,d,_,s,
+           r,g,m,p,d,n,S,_,
+           _,S,n,d,p,m,g,_,
+           r,s,_,_,_,_,_,_] },
+
   { title:'Verse 7',
-    line1:[s,r,g,m,p,d,n,s,r,g,m,p,d,n,S],
-    line2:[S,n,d,p,m,g,r,S,n,d,p,m,g,r,s] },
+    notes:[s,r,g,m,p,d,n,_,
+           s,r,g,m,p,d,n,S,
+           S,n,d,p,m,g,r,_,
+           S,n,d,p,m,g,r,s] },
+
   { title:'Verse 8',
-    line1:[s,r,g,m,p,m,g,r,s,r,g,m,p,d,n,S],
-    line2:[S,n,d,p,m,p,d,n,S,n,d,p,m,g,r,s] },
+    notes:[s,r,g,m,p,m,g,r,
+           s,r,g,m,p,d,n,S,
+           S,n,d,p,m,p,d,n,
+           S,n,d,p,m,g,r,s] },
+
   { title:'Verse 9',
-    line1:[s,r,g,m,p,m,d,p,s,r,g,m,p,d,n,S],
-    line2:[S,n,d,p,m,p,g,m,S,n,d,p,m,g,r,s] },
+    notes:[s,r,g,m,p,m,d,p,
+           s,r,g,m,p,d,n,S,
+           S,n,d,p,m,p,g,m,
+           S,n,d,p,m,g,r,s] },
+
   { title:'Verse 10',
-    line1:[s,r,g,m,p,g,m,p,d,n,d,p,m,g,m,p],
-    line2:[g,m,p,d,n,d,p,m,g,m,p,g,m,g,r,s] },
+    notes:[s,r,g,m,p,_,g,m,
+           p,_,_,_,p,_,_,_,
+           g,m,p,d,n,d,p,m,
+           g,m,p,_,g,m,g,r,
+           s,_,_,_,_,_,_,_] },
+
   { title:'Verse 11',
-    line1:[S,n,d,p,n,d,p,m,d,p,m,g,m,g,r,s],
-    line2:[g,m,p,d,n,d,p,m,g,m,p,g,m,g,r,s] },
+    notes:[S,_,n,d,n,_,d,p,
+           d,_,p,m,p,_,p,_,
+           g,m,p,d,n,d,p,m,
+           g,m,p,_,g,m,g,r,
+           s,_,_,_,_,_,_,_] },
+
   { title:'Verse 12',
-    line1:[S,S,n,d,n,n,d,p,d,d,p,m,p,m,g,r],
-    line2:[g,m,p,d,n,d,p,m,g,m,p,g,m,g,r,s] },
+    notes:[S,S,n,d,n,n,d,p,
+           d,d,p,m,p,_,p,_,
+           g,m,p,d,n,d,p,m,
+           g,m,p,_,g,m,g,r,
+           s,_,_,_,_,_,_,_] },
+
   { title:'Verse 13',
-    line1:[s,r,g,r,g,m,p,m,p,d,n,S],
-    line2:[S,n,d,p,m,p,d,p,m,g,r,s] },
+    notes:[s,r,g,r,g,_,g,m,
+           p,m,p,_,d,p,d,_,
+           m,p,d,p,d,n,d,p,
+           m,p,d,p,m,g,r,s] },
+
   { title:'Verse 14',
-    line1:[s,r,g,m,p,p,d,d,n,S,S,n,d,p,m,g,r,s],
-    line2:[s,r,g,m,p,d,n,S,n,d,p,m,g,r,s] },
+    notes:[s,r,g,m,p,_,p,_,
+           d,d,p,_,m,m,p,_,
+           d,n,S,_,S,n,d,p,
+           S,n,d,p,m,g,r,s] },
 ];
 
 /* ════════════════════════════════════════════════════════════

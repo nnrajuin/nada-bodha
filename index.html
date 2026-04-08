@@ -687,12 +687,15 @@ let currentTalaGroups  = [4, 2, 2];
 let currentBPM       = 90;
 let currentMult      = 1;
 let noteDuration     = Math.round(60000 / 90);  // ms per note
+let notesPerRow      = 8;                        // = currentBeatsPerRow * currentMult
 
 /* ══════════════════════════════════════
    COORDINATE HELPERS
 ══════════════════════════════════════ */
-function xFor(beat) { return PL + (beat / (currentBeatsPerRow - 1)) * PLOT_W; }
-function yFor(pitch){ return PT + (1 - (pitch - currentPitchConfig.min)/(currentPitchConfig.max - currentPitchConfig.min)) * PLOT_H; }
+function xFor(beat)   { return PL + (beat / (currentBeatsPerRow - 1)) * PLOT_W; }
+/* xForNote: maps note index ni (within a row of notesPerRow) to canvas x */
+function xForNote(ni) { return notesPerRow <= 1 ? PL + PLOT_W / 2 : PL + (ni / (notesPerRow - 1)) * PLOT_W; }
+function yFor(pitch)  { return PT + (1 - (pitch - currentPitchConfig.min)/(currentPitchConfig.max - currentPitchConfig.min)) * PLOT_H; }
 
 /* ══════════════════════════════════════
    AUDIO ENGINE  (Safari-compatible)
@@ -723,7 +726,7 @@ function stopAllOscillators() {
 function playFreq(freq, gainLevel) {
     if (muted) return;
     const ctx = getAudioCtx(), now = ctx.currentTime;
-    const durMs = Math.min(noteDuration * 0.85, 600);
+    const durMs = Math.min(noteDuration * 0.85, 400);
     const dur = durMs / 1000;
     pruneOscillators();
     const osc = ctx.createOscillator(), gain = ctx.createGain();
@@ -743,11 +746,11 @@ function playTone(label) {
     lastPlayedFreq = freq;
     playFreq(freq, 0.30);
 }
-function playMetro(noteIdx) {
+function playMetro(beatAbsolute) {
     if (!metroOn) return;
     const ctx = getAudioCtx(), now = ctx.currentTime + 0.005;
     const N = currentTalaPattern ? currentTalaPattern.beats.length : 8;
-    const isDown = (noteIdx % N === 0);
+    const isDown = (beatAbsolute % N === 0);
     const osc = ctx.createOscillator(), gain = ctx.createGain();
     osc.type = 'square';
     osc.frequency.setValueAtTime(isDown ? 1200 : 800, now);
@@ -1219,12 +1222,12 @@ function render() {
 /* ══════════════════════════════════════
    HAND ACTIVATION
 ══════════════════════════════════════ */
-function setActiveHand(gIdx) {
+function setActiveHand(gIdx, beatAbsolute) {
     fixedHandEls.forEach(h => h.classList.remove('active'));
     if (gIdx < 0) { pulseDots.forEach(d => d.classList.remove('active')); return; }
     const N  = fixedHandEls.length || currentBeatsPerRow;
     const ri = Math.floor(gIdx / currentBeatsPerRow);
-    const bi = gIdx % N;
+    const bi = (beatAbsolute !== undefined) ? (beatAbsolute % N) : (gIdx % N);
     if (!fixedHandEls[bi]) return;
     const el = fixedHandEls[bi];
     el.classList.remove('active'); void el.offsetWidth; el.classList.add('active');
@@ -1261,13 +1264,21 @@ function playStep(idx) {
         }, noteDuration);
         return;
     }
+    // Carnatic kala: beats are fixed to BPM; notes-per-beat changes with kala multiplier.
+    // notesPerBeat = currentMult for kala ≥ 1; for Chauka (0.5), each note spans 2 beats.
+    const notesPerBeat = currentMult >= 1 ? Math.round(currentMult) : 1;
+    const beatAbsolute = currentMult >= 1 ? Math.floor(idx / notesPerBeat) : idx * 2;
+    const isBeatBoundary = (idx % notesPerBeat === 0);
+
     currentGlobalIdx = idx;
-    setActiveHand(idx);
-    playMetro(idx);
+    if (isBeatBoundary) {
+        setActiveHand(idx, beatAbsolute);
+        playMetro(beatAbsolute);
+    }
     if (currentNotes[idx].label !== '-') {
         playTone(currentNotes[idx].label);
     } else if (lastPlayedFreq) {
-        playFreq(lastPlayedFreq, 0.18);   // 0.6× normal gain — natural decay of held note
+        playFreq(lastPlayedFreq, 0.18);
     }
     seqTimer = setTimeout(() => playStep(idx + 1), noteDuration);
 }
@@ -1315,9 +1326,33 @@ function buildLineHTML(notes) {
     return parts.join('\u2009');
 }
 
-function buildVerseHTML(verse) {
+/* Render a flat notes array as one div.vline per tala cycle */
+function buildNotesHTML(notes) {
+    const bpr = currentBeatsPerRow;
+    const sepPos = new Set();
+    let cum = 0;
+    for (let g = 0; g < currentTalaGroups.length - 1; g++) {
+        cum += currentTalaGroups[g];
+        sepPos.add(cum);
+    }
     let html = '';
-    if (verse.line1.length > 0)
+    for (let i = 0; i < notes.length; i += bpr) {
+        const cycle = notes.slice(i, i + bpr);
+        const parts = [];
+        cycle.forEach((note, j) => {
+            parts.push(`<span class="vnote">${note.label}</span>`);
+            if (sepPos.has(j + 1)) parts.push('<span class="sep">|</span>');
+        });
+        parts.push('<span class="dbl-bar"> ||</span>');
+        html += `<div class="vline">${parts.join('\u2009')}</div>`;
+    }
+    return html;
+}
+
+function buildVerseHTML(verse) {
+    if (verse.notes) return buildNotesHTML(verse.notes);
+    let html = '';
+    if (verse.line1 && verse.line1.length > 0)
         html += `<div class="vline"><span class="vline-dir">\u2191</span>\u2009${buildLineHTML(verse.line1)}</div>`;
     if (verse.line2 && verse.line2.length > 0)
         html += `<div class="vline"><span class="vline-dir">\u2193</span>\u2009${buildLineHTML(verse.line2)}</div>`;
@@ -1345,7 +1380,15 @@ function loadVerse(gradeIdx, verseIdx) {
     /* Tala hand pattern */
     setTalaPattern(hTala);
 
-    currentNotes = [...verse.line1, ...(verse.line2 || [])];
+    currentNotes = verse.notes ? [...verse.notes] : [...verse.line1, ...(verse.line2 || [])];
+
+    /* Resolve sustain pitches: '-' notes inherit the previous note's pitch */
+    let _lp = 0;
+    currentNotes = currentNotes.map(n => {
+        if (n.label === '-') return { label: '-', pitch: _lp };
+        _lp = n.pitch;
+        return n;
+    });
 
     // Verse label
     let lblText = 'Grade ' + (gradeIdx+1) + ' \u00B7 ' + verse.title;
@@ -1648,25 +1691,19 @@ function setPulseDot(beatIdx) {
     });
 }
 
-function kalaForBpm(bpm) {
-    if (bpm <= 60)  return 'Vilamba Kala';
-    if (bpm <= 100) return 'Madhyama Kala';
-    if (bpm <= 120) return 'Dhruta Kala';
-    return 'Ati-Dhruta Kala';
-}
-
 function updateBPM() {
-    noteDuration = Math.round(60000 / currentBPM * (1 / currentMult));
+    noteDuration = Math.round(60000 / currentBPM / currentMult);
+    const k = Object.values(KALA_MAP).find(v => v.mult === currentMult) || KALA_MAP['1'];
     document.getElementById('bpmDisplay').textContent =
-        '\u2669 = ' + currentBPM + ' BPM \u00B7 ' + kalaForBpm(currentBPM);
+        '\u2669 = ' + currentBPM + ' BPM \u00B7 ' + k.name + ' Kala (' + k.desc + ')';
 }
 
 /* Kala buttons */
 const KALA_MAP = {
-    '0.5': {mult:0.5},
-    '1':   {mult:1},
-    '2':   {mult:2},
-    '4':   {mult:4},
+    '0.5': {mult:0.5, name:'Chauka',    desc:'1 note/2 beats'},
+    '1':   {mult:1,   name:'Prathama',  desc:'1 note/beat'},
+    '2':   {mult:2,   name:'Dwitiya',   desc:'2 notes/beat'},
+    '4':   {mult:4,   name:'Chatushkala', desc:'4 notes/beat'},
 };
 document.querySelectorAll('.speed-btn').forEach(btn => {
     btn.addEventListener('click', () => {
