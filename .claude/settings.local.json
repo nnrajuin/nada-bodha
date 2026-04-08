@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node --check /Users/rajunn/GenAI/VisualMusic/lessonData.js)",
+      "Bash(node:*)"
+    ]
+  }
+}

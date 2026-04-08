@@ -1,0 +1,1628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#3D1C02">
+<title>Nāda Bodha — Visual Carnatic Music for Beginners</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: #FFF8F0; color: #3A1F0D;
+    min-height: 100vh; display: flex; flex-direction: column; align-items: center;
+}
+
+/* ── HEADER ── */
+header {
+    width: 100%;
+    background: linear-gradient(135deg, #4A1C08, #8B4513);
+    color: #F5DEB3; padding: 14px 36px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.35);
+}
+.hdr-raga { min-width: 160px; }
+.hdr-jati { min-width: 160px; text-align: right; }
+.hdr-raga .label, .hdr-jati .label {
+    font-size: .72rem; text-transform: uppercase; letter-spacing: .12em;
+    color: #D4A574; display: block; margin-bottom: 2px;
+}
+.hdr-raga .value, .hdr-jati .value { font-size: 1.05rem; font-weight: bold; color: #FFD700; }
+.hdr-title {
+    font-size: 1.45rem; font-weight: bold; text-align: center;
+    letter-spacing: .04em; color: #FFF5E6; text-shadow: 0 1px 3px rgba(0,0,0,.4);
+    line-height: 1.25;
+}
+
+/* ── MAIN ── */
+.main {
+    width: 860px; max-width: 100%;
+    padding: 18px 20px 32px;
+    display: flex; flex-direction: column; align-items: center; gap: 14px;
+}
+
+/* ── LESSON PICKER ── */
+.lesson-picker {
+    width: 100%; background: #FDF0E0;
+    border: 2px solid #CD853F; border-radius: 10px; padding: 12px 16px;
+    display: flex; flex-direction: column; gap: 10px;
+}
+.picker-row { display: flex; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+.picker-label {
+    font-size: .7rem; text-transform: uppercase; letter-spacing: .14em;
+    color: #8B4513; min-width: 44px; font-weight: bold; padding-top: 8px; white-space: nowrap;
+}
+.grade-tabs { display: flex; gap: 7px; flex-wrap: wrap; }
+.grade-tab {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 6px 11px; border-radius: 7px; border: 1.5px solid #CD853F;
+    background: #FFF8F0; color: #5C2E0A;
+    cursor: pointer; transition: all .18s; font-family: Georgia, serif; line-height: 1.3;
+}
+.grade-tab:hover { background: #F5DEB3; }
+.grade-tab .g-num { font-size: .6rem; text-transform: uppercase; letter-spacing: .1em; color: #A0622A; }
+.grade-tab .g-name { font-size: .76rem; font-weight: bold; }
+.grade-tab.active { background: #8B4513; border-color: #8B4513; color: #fff; }
+.grade-tab.active .g-num { color: #F5DEB3; }
+.grade-tab.nottu-tab.active { background: #3B5298; border-color: #3B5298; }
+
+.verse-tabs { display: flex; gap: 6px; flex-wrap: wrap; align-items: flex-start; }
+.verse-btn {
+    padding: 5px 11px; font-size: .78rem; border-radius: 5px;
+    border: 1.5px solid #CD853F; background: #FFF8F0; color: #5C2E0A;
+    cursor: pointer; transition: all .18s; font-family: Georgia, serif;
+}
+.verse-btn:hover:not(.v-soon) { background: #F5DEB3; }
+.verse-btn.active { background: #CD853F; color: #fff; border-color: #CD853F; }
+.verse-btn.v-soon { opacity: .45; cursor: default; font-style: italic; }
+.coming-soon-banner { font-size: .82rem; color: #8B4513; font-style: italic; padding: 6px 2px; }
+
+/* Nottuswaram info banner */
+.nottu-info-banner {
+    width: 100%; font-size: .72rem; color: #506090; font-style: italic;
+    background: #E8EDF8; border: 1px solid #B0BDD8; border-radius: 5px;
+    padding: 5px 10px; line-height: 1.4;
+}
+
+/* Nottuswaram compact picker */
+.nottu-picker-row { display: flex; align-items: center; gap: 10px; width: 100%; flex-wrap: wrap; }
+.nottu-picker-lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em;
+    color: #8B4513; font-weight: bold; white-space: nowrap; }
+#nottuswaramSelect {
+    flex: 1; min-width: 180px; padding: 8px 12px; font-size: 14px;
+    font-family: Georgia, serif; background: #FDF6E3;
+    border: 1.5px solid #C8A97E; border-radius: 6px;
+    color: #3D1C02; cursor: pointer;
+}
+#nottuswaramSelect:focus { outline: none; border-color: #8B4513; }
+
+/* Nottuswaram selected card (single) */
+#nottuswaramCard {
+    width: 100%; background: #FDF6E3;
+    border: 1.5px solid #C8A060; border-radius: 8px; overflow: hidden;
+    margin-top: 8px;
+}
+
+.nc-body { padding: 9px 13px; }
+.nc-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+.nc-main { flex: 1; min-width: 0; }
+.nc-title { font-size: .84rem; font-weight: bold; color: #2A2A50; display: block; }
+.nc-deity { font-size: .7rem; color: #506090; display: block; margin-top: 2px; }
+.nc-badge { font-size: .62rem; color: #8890A8; font-style: italic; display: block; margin-top: 3px; }
+.nc-toggle {
+    padding: 3px 9px; font-size: .68rem; border-radius: 4px; flex-shrink: 0;
+    border: 1px solid #C8A060; background: #FFF3D8; color: #6A4010;
+    cursor: pointer; white-space: nowrap; font-family: Georgia, serif; transition: background .15s;
+}
+.nc-toggle:hover { background: #FFE8C0; }
+.nc-lyrics {
+    display: none; padding: 8px 14px 12px 18px;
+    border-top: 1px solid #E8D8B0; background: #FFFBF0;
+}
+.nc-lyrics.open { display: block; }
+.nc-lyric-line {
+    font-size: .78rem; font-style: italic; color: #3A3050;
+    line-height: 2.0; font-family: Georgia, serif; display: block;
+}
+.nc-lyric-sep {
+    display: inline-block; margin: 0 6px; color: #C8A060; font-style: normal;
+}
+
+/* ── VERSE BOX ── */
+.verse-box {
+    width: 100%; background: #FFF3E0; border: 2px solid #CD853F;
+    border-radius: 10px; padding: 11px 22px;
+    display: flex; align-items: flex-start; gap: 14px;
+    max-height: 130px; overflow-y: auto;
+}
+.verse-label {
+    font-size: .72rem; text-transform: uppercase; letter-spacing: .12em;
+    color: #8B4513; white-space: nowrap; padding-right: 12px;
+    border-right: 2px solid #CD853F; min-width: 100px; padding-top: 3px; flex-shrink: 0;
+}
+.verse-notes { font-weight: bold; line-height: 1.7; flex: 1; }
+.vline { display: block; margin-bottom: 1px; }
+.vline-dir { font-size: .8rem; color: #CD853F; font-weight: normal; margin-right: 3px; vertical-align: middle; }
+.verse-notes .sep { color: #CD853F; margin: 0 4px; font-weight: normal; }
+.verse-notes .dbl-bar { color: #8B4513; font-weight: 600; font-size: 1.1em; margin-left: 3px; }
+.nottu-meta { font-size: .9rem; color: #506090; font-weight: normal; font-style: italic; }
+
+/* ── CHART SECTION ── */
+.chart-section { display: flex; flex-direction: column; align-items: center; gap: 0; width: 100%; }
+#chartScrollFrame {
+    height: 420px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth;
+    width: 100%; border: 1px solid #E0C890; border-radius: 8px;
+    scrollbar-width: thin; scrollbar-color: #C8A97E #F5ECD7;
+}
+#chartScrollFrame::-webkit-scrollbar { width: 6px; }
+#chartScrollFrame::-webkit-scrollbar-thumb { background: #C8A97E; border-radius: 3px; }
+#chartScrollFrame::-webkit-scrollbar-track { background: #F5ECD7; }
+#chartsContainer { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; padding: 6px 0; }
+.chart-row { display: flex; flex-direction: column; align-items: flex-start; }
+#fixedHandsRow { position: relative; height: 102px; margin-top: 2px; width: 820px; }
+
+/* COMPACT CHART: 150px height */
+.chart-canvas {
+    display: block;
+    border: 1.5px solid #C8A882; border-radius: 8px;
+    background: #fff; box-shadow: 0 2px 8px rgba(139,69,19,.10);
+    width: 820px; height: 150px;
+}
+
+/* ── HANDS ROW ── */
+.hands-row { position: relative; height: 102px; margin-top: 1px; }
+.hand {
+    position: absolute; transform: translateX(-50%); top: 2px;
+    opacity: .35; transition: opacity .2s;
+    user-select: none; display: flex; flex-direction: column;
+    align-items: center; gap: 1px; cursor: default;
+}
+.hand.active { opacity: 1; animation: handPop .6s ease-out forwards; }
+@keyframes handPop {
+    0%   { transform: translateX(-50%) scale(1.0)  translateY(0); }
+    25%  { transform: translateX(-50%) scale(1.38) translateY(-7px); }
+    65%  { transform: translateX(-50%) scale(1.22) translateY(-3px); }
+    100% { transform: translateX(-50%) scale(1.18) translateY(-2px); }
+}
+.hand-glow {
+    position: absolute; width: 62px; height: 62px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,215,0,.80) 0%, rgba(255,165,0,.28) 50%, transparent 100%);
+    top: -4px; left: 50%; transform: translateX(-50%);
+    opacity: 0; pointer-events: none;
+}
+.hand.active .hand-glow { animation: glowBurst .6s ease-out forwards; }
+@keyframes glowBurst {
+    0%   { opacity: 0; transform: translateX(-50%) scale(.55); }
+    35%  { opacity: 1; transform: translateX(-50%) scale(1.25); }
+    100% { opacity: .65; transform: translateX(-50%) scale(1.0); }
+}
+.hand svg { display: block; }
+.hand-lbl { font-size: 10px; color: #7A4010; font-family: Georgia, serif; text-align: center; line-height: 1.2; }
+.hand-sol { font-size: 9px; color: #A06030; font-style: italic; font-family: Georgia, serif; text-align: center; line-height: 1.1; }
+.hand-star { font-size: 9px; color: #C8A000; line-height: 1.1; text-align: center; }
+.hand.active .hand-lbl { color: #B8860B; font-weight: bold; }
+.hand.active .hand-sol { color: #C09020; }
+.hand.active .hand-star { color: #FFD700; }
+
+/* ── SPEED CONTROL ── */
+.speed-row {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+    flex-wrap: wrap; justify-content: center;
+}
+.speed-label { font-size: .78rem; color: #5C2E0A; font-weight: bold; letter-spacing: .06em; }
+.speed-btn {
+    padding: 5px 14px; font-size: .8rem; font-family: Georgia, serif;
+    border: 1.5px solid #CD853F; border-radius: 5px;
+    background: #FFF8F0; color: #5C2E0A; cursor: pointer; transition: all .15s;
+}
+.speed-btn:hover { background: #F5DEB3; }
+.speed-btn.active { background: #8B4513; color: #FFF5E6; border-color: #8B4513; }
+#bpmSelect {
+    padding: 5px 8px; font-size: .8rem; font-family: Georgia, serif;
+    border: 1.5px solid #CD853F; border-radius: 5px;
+    background: #FFF8F0; color: #5C2E0A; cursor: pointer;
+}
+
+/* ── CONTROLS ── */
+.controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.controls button {
+    padding: 9px 26px; font-size: .92rem; font-family: Georgia, serif;
+    border: none; border-radius: 7px; cursor: pointer;
+    transition: all .18s; font-weight: bold; letter-spacing: .04em;
+}
+#playBtn {
+    background: linear-gradient(135deg, #8B4513, #C26A22);
+    color: #FFF5E6; box-shadow: 0 2px 8px rgba(139,69,19,.35);
+}
+#playBtn:hover:not(:disabled) {
+    background: linear-gradient(135deg, #6B3010, #A0541A);
+    transform: translateY(-2px); box-shadow: 0 4px 14px rgba(139,69,19,.45);
+}
+#playBtn:disabled { opacity: .55; cursor: not-allowed; }
+#muteBtn { background: #EEE0C5; color: #5C2E0A; border: 2px solid #CD853F; padding: 9px 18px; }
+#muteBtn:hover { background: #FFE8C0; }
+#muteBtn.is-muted { background: #D5CBBA; color: #888; border-color: #B0A080; }
+#metroBtn { background: #EEE0C5; color: #5C2E0A; border: 2px solid #CD853F; padding: 9px 18px; }
+#metroBtn:hover { background: #FFE8C0; }
+#metroBtn.metro-on { background: #8B6820; color: #FFF5E6; border-color: #5A4010; }
+.shruti-group { display: flex; align-items: center; gap: 5px; }
+.shruti-sa-lbl { font-size: .72rem; color: #5C2E0A; font-weight: bold; white-space: nowrap; }
+#shrutiBtn { background: #EEE0C5; color: #5C2E0A; border: 2px solid #CD853F; padding: 9px 18px; }
+#shrutiBtn:hover { background: #FFE8C0; }
+#shrutiBtn.shruti-on { background: #8B6820; color: #FFF5E6; border-color: #5A4010; }
+#shrutiSelect { padding: 5px 6px; font-size: .78rem; font-family: Georgia, serif;
+    border: 1.5px solid #CD853F; border-radius: 5px;
+    background: #FFF8F0; color: #5C2E0A; cursor: pointer; }
+#resetBtn { background: #F5DEB3; color: #5C2E0A; border: 2px solid #CD853F; }
+#resetBtn:hover { background: #FFE8C0; transform: translateY(-1px); }
+
+/* ── LEGEND ── */
+.legend {
+    display: flex; gap: 16px; font-size: .76rem; color: #6B4020;
+    align-items: center; flex-wrap: wrap; justify-content: center; margin-top: 5px;
+}
+.legend-item { display: flex; align-items: center; gap: 5px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+.legend-line { width: 22px; height: 2px; border-radius: 2px; display: inline-block; flex-shrink: 0; }
+
+/* ── GRADE DESC BANNER ── */
+.grade-desc-banner {
+    font-size: .72rem; color: #6B4020; font-style: italic;
+    background: #FEF6E8; border: 1px solid #E0C090; border-radius: 5px;
+    padding: 4px 10px; margin-bottom: 4px; width: 100%;
+}
+
+/* ── BPM ROW ── */
+.bpm-row {
+    width: 100%; text-align: right; padding: 0 4px 2px;
+    font-size: .74rem; color: #8B5E2A; font-style: italic;
+    letter-spacing: .04em;
+}
+
+/* ── PULSE BAR ── */
+#pulseBarOuter {
+    width: 820px; display: flex; justify-content: space-around;
+    align-items: center; height: 22px; margin-bottom: 3px;
+}
+.pulse-dot {
+    width: 12px; height: 12px; border-radius: 50%;
+    background: #C8A97E; transition: background .12s;
+    flex-shrink: 0;
+}
+.pulse-dot.active {
+    background: #D4A017;
+    box-shadow: 0 0 6px 3px rgba(212,160,23,.55);
+    animation: pulsePop .35s ease-out forwards;
+}
+@keyframes pulsePop {
+    0%   { transform: scale(1.0); }
+    35%  { transform: scale(1.5); }
+    100% { transform: scale(1.25); }
+}
+
+/* ── TOAST ── */
+#toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: #4A1C08; color: #F5DEB3; padding: 10px 26px; border-radius: 8px;
+    font-size: .9rem; opacity: 0; pointer-events: none;
+    transition: opacity .3s; z-index: 999; white-space: nowrap;
+}
+#toast.show { opacity: 1; }
+
+/* ── TOUCH TARGETS ── */
+button, .grade-tab, .verse-btn {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+}
+.controls button { min-height: 44px; min-width: 44px; }
+.grade-tab, .verse-btn { min-height: 36px; }
+
+/* ── MOBILE: < 768px ── */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column; align-items: stretch;
+        padding: 8px 12px; gap: 4px; text-align: center;
+    }
+    .hdr-raga { min-width: unset; }
+    .hdr-jati { min-width: unset; text-align: center; }
+    .hdr-title { font-size: 18px; }
+
+    .main { padding: 10px 8px 24px; gap: 10px; }
+
+    .grade-tabs { flex-wrap: wrap; gap: 5px; }
+    .grade-tab { padding: 4px 8px; }
+    .grade-tab .g-num { font-size: .58rem; }
+    .grade-tab .g-name { font-size: .68rem; }
+
+    .verse-tabs { flex-wrap: wrap; gap: 5px; }
+    .verse-btn { padding: 4px 8px; font-size: .7rem; }
+
+    .verse-box { font-size: 14px; overflow-x: auto; }
+
+    #chartScrollFrame { height: 340px; }
+
+    .speed-row { flex-wrap: wrap; gap: 6px; justify-content: center; }
+    .controls { flex-wrap: wrap; gap: 7px; justify-content: center; }
+    .controls button { padding: 8px 14px; font-size: .84rem; }
+    .shruti-group { flex-wrap: wrap; justify-content: center; }
+
+    .hand svg { width: 38px; height: 44px; }
+    .hand-lbl { font-size: 8px; }
+    .hand-sol { font-size: 7px; }
+}
+
+/* ── MOBILE: < 480px ── */
+@media (max-width: 480px) {
+    .hdr-title { font-size: 15px; }
+    .main { padding: 6px 4px 18px; }
+
+    #chartScrollFrame { height: 280px; }
+
+    #bpmRow #bpmDisplay { font-size: .62rem; }
+
+    .grade-tab .g-name { font-size: .62rem; }
+    .grade-tab .g-full-name { display: none; }
+
+    .controls button { font-size: .78rem; padding: 8px 10px; width: 100%; }
+    .controls { flex-direction: column; align-items: stretch; }
+    .shruti-group { justify-content: stretch; }
+    #shrutiBtn { flex: 1; }
+
+    .hand svg { width: 32px; height: 38px; }
+    .hand-lbl { font-size: 7px; }
+    .hand-sol { font-size: 6px; }
+
+    .speed-row { gap: 4px; }
+    .speed-btn { padding: 4px 7px; font-size: .7rem; }
+}
+
+/* ── CHART SCROLL: horizontal overflow on small screens ── */
+@media (max-width: 860px) {
+    #chartScrollFrame { overflow-x: auto; }
+    #fixedHandsRow { overflow-x: visible; }
+    #pulseBarOuter { overflow-x: auto; }
+}
+</style>
+</head>
+<body>
+
+<header>
+    <div class="hdr-raga">
+        <span class="label">Raga</span>
+        <span class="value" id="hdrRaga">Mayamalavagowla</span>
+    </div>
+    <div class="hdr-title" id="hdrTitle">Nāda Bodha<br><span style="font-size:13px;color:#E8C97E;font-weight:normal;letter-spacing:.06em;">Visual Carnatic Music · Beginner Guide</span></div>
+    <div class="hdr-jati">
+        <span class="label" id="hdrTalaLabel">Jati &amp; Thalam</span>
+        <span class="value" id="hdrTala">Chatusra · Adi</span>
+    </div>
+</header>
+
+<div class="main">
+
+    <div class="lesson-picker">
+        <div class="picker-row">
+            <div class="picker-label">Grade</div>
+            <div class="grade-tabs" id="gradeTabs"></div>
+        </div>
+        <div class="picker-row">
+            <div class="picker-label" id="versePLabel">Verse</div>
+            <div class="verse-tabs" id="verseTabs"></div>
+        </div>
+    </div>
+
+    <div id="bpmRow" class="bpm-row"><span id="bpmDisplay">&#9833; = 90 BPM · Madhyama Kala</span></div>
+
+    <div class="verse-box">
+        <div class="verse-label" id="verseLabel">Grade 1 · Verse 1</div>
+        <div class="verse-notes" id="verseNotes"></div>
+    </div>
+
+    <div class="chart-section">
+        <div id="chartScrollFrame">
+            <div id="chartsContainer"></div>
+        </div>
+        <div id="fixedHandsRow" class="hands-row"></div>
+        <div id="pulseBarOuter"></div>
+        <div class="speed-row">
+            <span class="speed-label">Kala:</span>
+            <select id="bpmSelect">
+                <optgroup label="Beginner">
+                    <option value="40">40 BPM</option>
+                    <option value="50">50 BPM</option>
+                    <option value="60">60 BPM</option>
+                </optgroup>
+                <optgroup label="Student">
+                    <option value="72">72 BPM</option>
+                    <option value="80">80 BPM</option>
+                    <option value="90" selected>90 BPM</option>
+                    <option value="100">100 BPM</option>
+                </optgroup>
+                <optgroup label="Performance">
+                    <option value="108">108 BPM</option>
+                    <option value="120">120 BPM</option>
+                    <option value="144">144 BPM</option>
+                </optgroup>
+            </select>
+            <button class="speed-btn" data-mult="0.5">Chauka ½×</button>
+            <button class="speed-btn active" data-mult="1">Madhyama 1×</button>
+            <button class="speed-btn" data-mult="2">Dwitiya 2×</button>
+            <button class="speed-btn" data-mult="4">Tritiya 4×</button>
+        </div>
+        <div class="controls">
+            <button id="playBtn">&#9654;&#xFE0E;&nbsp;Play</button>
+            <button id="muteBtn">&#128266;&nbsp;Sound</button>
+            <button id="metroBtn">&#x1F941;&nbsp;Metro: OFF</button>
+            <div class="shruti-group">
+                <button id="shrutiBtn">&#127925;&nbsp;Shruti: OFF</button>
+                <span class="shruti-sa-lbl">Sa&nbsp;=</span>
+                <select id="shrutiSelect">
+                    <option value="130.81">C &nbsp;(4 kattai)</option>
+                    <option value="138.59">C# (4.5 kattai)</option>
+                    <option value="146.83">D &nbsp;(5 kattai)</option>
+                    <option value="155.56">D# (5.5 kattai)</option>
+                    <option value="164.81">E &nbsp;(6 kattai)</option>
+                    <option value="174.61">F &nbsp;(6.5 kattai)</option>
+                    <option value="184.99">F# (7 kattai)</option>
+                    <option value="196.00" selected>G &nbsp;(7 kattai)</option>
+                    <option value="207.65">G# (7.5 kattai)</option>
+                    <option value="220.00">A &nbsp;(8 kattai)</option>
+                </select>
+            </div>
+            <button id="resetBtn">&#8635;&nbsp;Reset</button>
+        </div>
+        <div class="legend">
+            <div class="legend-item">
+                <span class="legend-dot" style="background:#E53E3E;border:1.5px solid #B91C1C;"></span>Note
+            </div>
+            <div class="legend-item">
+                <span class="legend-dot" style="background:#22C55E;border:1.5px solid #16A34A;"></span>Active
+            </div>
+            <div class="legend-item">
+                <span class="legend-line" style="background:#4A90D9;"></span>Contour
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script src="lessonData.js"></script>
+<script>
+(function () {
+'use strict';
+
+/* ══════════════════════════════════════
+   CONSTANTS  — compact 160px chart
+══════════════════════════════════════ */
+const CW = 820, CH = 150;
+const PL = 48, PR = 16, PT = 28, PB = 32;
+const PLOT_W = CW - PL - PR;   // 756
+const PLOT_H = CH - PT - PB;   // 90
+
+/* S_HI, R_HI, note helpers, and all verse/lesson data are in lessonData.js */
+
+const Y_LABELS = [
+    {name:'Sa',   pitch:0.0}, {name:'Ri',  pitch:0.5},
+    {name:'Ga',   pitch:2.0}, {name:'Ma',  pitch:2.5},
+    {name:'Pa',   pitch:3.5}, {name:'Da',  pitch:4.0},
+    {name:'Ni',   pitch:5.5}, {name:"Sa'", pitch:6.0},
+    {name:"Ri'",  pitch:6.5},
+];
+
+/* Shankarabharanam Y-axis labels (shifted +6, used for Nottuswarams) */
+const NT_Y_LABELS = [
+    {name:'\u1E61', pitch:0.0},
+    {name:'\u1E0B', pitch:4.0},
+    {name:'\u1E45', pitch:5.5},
+    {name:'s',      pitch:6.0},
+    {name:'r',      pitch:6.5},
+    {name:'g',      pitch:8.0},
+    {name:'m',      pitch:8.5},
+    {name:'p',      pitch:9.5},
+    {name:'d',      pitch:10.0},
+    {name:'n',      pitch:11.5},
+    {name:'\u1E60', pitch:12.0},
+    {name:'\u1E58', pitch:12.5},
+];
+const PITCH_CONFIG_DEFAULT = { min:0.0, max:7.0,  labels:Y_LABELS };
+const PITCH_CONFIG_NT      = { min:0.0, max:12.5, labels:NT_Y_LABELS };
+const MALAHARI_Y_LABELS = [
+    {name:'Sa',  pitch:0.0}, {name:'Ri', pitch:0.5},
+    {name:'Ma',  pitch:2.5}, {name:'Pa', pitch:3.5},
+    {name:'Da',  pitch:4.0}, {name:"Sa'",pitch:6.0},
+];
+const PITCH_CONFIG_MALAHARI = { min:0.0, max:7.0, labels:MALAHARI_Y_LABELS };
+
+/* Corrected Adi Tala (8-beat):
+   Laghu (4): Clap Pinky Ring Middle
+   Dhrutam×2: Clap Wave                  */
+const ADI_TALA = [
+    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+    {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+    {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+    {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+    {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+    {type:'clap',   lbl:'Clap',   sol:'di',  samam:false},
+    {type:'wave',   lbl:'Wave',   sol:'mi',  samam:false},
+];
+
+/* Additional tala patterns */
+const TALA_ROOPAKA = [
+    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+    {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+    {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+    {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+    {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+];
+const TALA_TRIPUTA = [
+    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+    {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+    {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+    {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:false},
+    {type:'wave',   lbl:'Wave',   sol:'ka',  samam:false},
+];
+const TALA_EKA = [
+    {type:'clap',   lbl:'Clap',   sol:'ta',  samam:true },
+    {type:'pinky',  lbl:'Pinky',  sol:'dhi', samam:false},
+    {type:'ring',   lbl:'Ring',   sol:'gi',  samam:false},
+    {type:'middle', lbl:'Middle', sol:'na',  samam:false},
+];
+
+/* Just-intonation frequencies, Sa = 196 Hz */
+const FREQ = {
+    's' :196.00, 'r':209.07,  'g':245.00,  'm':261.33,
+    'p' :294.00, 'd':313.60,  'n':367.50,
+    [S_HI]:392.00, [R_HI]:418.14,   // upper-octave Sa & Ri
+};
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let activeGradeIdx   = 0;
+let activeVerseIdx   = 0;
+let currentNotes     = [];
+let rows             = [];
+let canvases         = [];
+let fixedHandEls     = [];
+let currentGlobalIdx = -1;
+let rafId            = null;
+let seqTimer         = null;
+let glowAngle        = 0;
+let placeholderMode  = false;
+let currentPitchConfig = PITCH_CONFIG_DEFAULT;
+let muted            = false;
+let metroOn          = false;
+let shrutiOn         = false;
+let shrutiOscillators = [];
+let shrutiFilter     = null;
+let audioCtx         = null;
+let activeOscillators = [];
+let lastPlayedFreq   = null;
+let currentTalaPattern = ADI_TALA;
+let currentBPM       = 90;
+let currentMult      = 1;
+let noteDuration     = Math.round(60000 / 90);  // ms per note
+
+/* ══════════════════════════════════════
+   COORDINATE HELPERS
+══════════════════════════════════════ */
+function xFor(beat) { return PL + (beat / 7) * PLOT_W; }
+function yFor(pitch){ return PT + (1 - (pitch - currentPitchConfig.min)/(currentPitchConfig.max - currentPitchConfig.min)) * PLOT_H; }
+
+/* ══════════════════════════════════════
+   AUDIO ENGINE  (Safari-compatible)
+══════════════════════════════════════ */
+function getAudioCtx() {
+    if (!audioCtx || audioCtx.state === 'closed') {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        window.nadaAudioCtx = audioCtx;
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+}
+function pruneOscillators() {
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    activeOscillators = activeOscillators.filter(item => {
+        if (item.stopAt <= now) { try { item.gain.disconnect(); } catch(e){} return false; }
+        return true;
+    });
+}
+function stopAllOscillators() {
+    activeOscillators.forEach(item => {
+        try { item.osc.stop(); } catch(e) {}
+        try { item.gain.disconnect(); } catch(e) {}
+    });
+    activeOscillators = [];
+}
+function playFreq(freq, gainLevel) {
+    if (muted) return;
+    const ctx = getAudioCtx(), now = ctx.currentTime;
+    const durMs = Math.min(noteDuration * 0.85, 600);
+    const dur = durMs / 1000;
+    pruneOscillators();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = 'sine'; osc.frequency.setValueAtTime(freq, now);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.setTargetAtTime(gainLevel, now, 0.003);
+    gain.gain.setTargetAtTime(0, now + dur * 0.75, dur * 0.08);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(now);
+    const stopTime = Math.max(now + 0.001, now + dur + 0.05);
+    osc.stop(stopTime);
+    activeOscillators.push({ osc, gain, stopAt: stopTime });
+}
+function playTone(label) {
+    if (muted) return;
+    const freq = FREQ[label]; if (!freq) return;
+    lastPlayedFreq = freq;
+    playFreq(freq, 0.30);
+}
+function playMetro(noteIdx) {
+    if (!metroOn) return;
+    const ctx = getAudioCtx(), now = ctx.currentTime + 0.005;
+    const N = currentTalaPattern ? currentTalaPattern.length : 8;
+    const isDown = (noteIdx % N === 0);
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(isDown ? 1200 : 800, now);
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.setTargetAtTime(isDown ? 0.40 : 0.25, now, 0.001);
+    gain.gain.setTargetAtTime(0, now + (isDown ? 0.025 : 0.015), 0.005);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(now);
+    const stopTime = Math.max(now + 0.001, now + 0.050);
+    osc.stop(stopTime);
+    activeOscillators.push({ osc, gain, stopAt: stopTime });
+}
+async function startShruti(saFreq) {
+    stopShruti();
+    const actx = getAudioCtx();
+    /* Safari: wait until context is actually running */
+    let tries = 0;
+    while (actx.state !== 'running' && tries < 10) {
+        await actx.resume();
+        if (actx.state === 'running') break;
+        await new Promise(r => setTimeout(r, 50));
+        tries++;
+    }
+    shrutiFilter = actx.createBiquadFilter();
+    shrutiFilter.type = 'lowpass'; shrutiFilter.frequency.value = 800; shrutiFilter.Q.value = 0.7;
+    shrutiFilter.connect(actx.destination);
+    const lfo = actx.createOscillator();
+    lfo.type = 'sine'; lfo.frequency.value = 0.5; lfo.start();
+    shrutiOscillators.push(lfo);
+    [{freq:saFreq,       type:'sawtooth', base:0.12},
+     {freq:saFreq*1.5,   type:'sawtooth', base:0.08},
+     {freq:saFreq*2.0,   type:'sawtooth', base:0.07},
+     {freq:saFreq*4/3,   type:'sine',     base:0.04}
+    ].forEach(def => {
+        const osc = actx.createOscillator();
+        const gainNode = actx.createGain();
+        const lfoGain  = actx.createGain();
+        osc.type = def.type; osc.frequency.value = def.freq;
+        gainNode.gain.value = def.base; lfoGain.gain.value = 0.02;
+        lfo.connect(lfoGain); lfoGain.connect(gainNode.gain);
+        osc.connect(gainNode); gainNode.connect(shrutiFilter); osc.start();
+        shrutiOscillators.push(osc);
+    });
+}
+function stopShruti() {
+    shrutiOscillators.forEach(n => {
+        try { n.stop(); } catch(e) {}
+        try { n.disconnect(); } catch(e) {}
+    });
+    shrutiOscillators = [];
+    if (shrutiFilter) { try { shrutiFilter.disconnect(); } catch(e) {} shrutiFilter = null; }
+}
+
+/* ══════════════════════════════════════
+   REALISTIC HAND SVG BUILDER
+   ViewBox: 0 0 48 56
+   Skin: #D4956A  Stroke: #A0623A
+══════════════════════════════════════ */
+function buildHandSVG(type) {
+    const SK  = '#D4956A';
+    const SKW = '#DDA870';   // lighter for wave (palm face)
+    const ST  = '#A0623A';
+    const fill = type === 'wave' ? SKW : SK;
+
+    /* Anatomical constants */
+    const PALM_Y  = 30;     // top of palm rect
+    const FNG_BOT = 34;     // finger rects end here (4px into palm)
+    const CURL_Y  = 26;     // curled finger stub starts here
+
+    /* Finger definitions [x, tipY when full, width] */
+    const FDEFS = {
+        index:  {x: 9,  ty:10, w:7, rx:3.5},
+        middle: {x:18,  ty: 6, w:7, rx:3.5},
+        ring:   {x:27,  ty: 9, w:7, rx:3.5},
+        pinky:  {x:36,  ty:14, w:6, rx:3.0},
+    };
+
+    const isClap = type === 'clap', isWave = type === 'wave';
+    const ext = {
+        index:  isClap || isWave,
+        middle: isClap || isWave || type === 'middle',
+        ring:   isClap || isWave || type === 'ring',
+        pinky:  isClap || isWave || type === 'pinky',
+    };
+
+    let out = '';
+
+    /* 1 — Finger rects (drawn before palm so palm covers bottoms) */
+    Object.entries(FDEFS).forEach(([k, f]) => {
+        const tipY = ext[k] ? f.ty : CURL_Y;
+        const h    = FNG_BOT - tipY;
+        out += `<rect x="${f.x}" y="${tipY}" width="${f.w}" height="${h}" rx="${f.rx}" fill="${fill}" stroke="${ST}" stroke-width="1.2"/>`;
+    });
+
+    /* 2 — Thumb (drawn before palm so palm merges with base) */
+    out += `<rect x="2" y="25" width="7" height="15" rx="3.5" fill="${fill}" stroke="${ST}" stroke-width="1.2"/>`;
+
+    /* 3 — Palm rect (covers finger/thumb bottoms) */
+    out += `<rect x="4" y="${PALM_Y}" width="39" height="18" rx="8" fill="${fill}" stroke="${ST}" stroke-width="1.2"/>`;
+
+    /* 4 — Palm crease line */
+    out += `<path d="M11,${PALM_Y+7} Q24,${PALM_Y+4} 38,${PALM_Y+7}" fill="none" stroke="${ST}" stroke-width=".55" opacity=".7"/>`;
+
+    /* 5 — Joint lines on EXTENDED fingers (drawn after palm → visible above palm) */
+    Object.entries(FDEFS).forEach(([k, f]) => {
+        if (ext[k]) {
+            const vis = PALM_Y - f.ty;
+            const j1  = +(f.ty + vis / 3).toFixed(0);
+            const j2  = +(f.ty + vis * 2 / 3).toFixed(0);
+            out += `<line x1="${f.x+1}" y1="${j1}" x2="${f.x+f.w-1}" y2="${j1}" stroke="${ST}" stroke-width=".6" stroke-linecap="round"/>`;
+            out += `<line x1="${f.x+1}" y1="${j2}" x2="${f.x+f.w-1}" y2="${j2}" stroke="${ST}" stroke-width=".6" stroke-linecap="round"/>`;
+        } else {
+            /* Knuckle arch on curled finger */
+            const hw = f.w / 2;
+            out += `<path d="M${f.x},${CURL_Y+4} Q${f.x+hw},${CURL_Y-1} ${f.x+f.w},${CURL_Y+4}" fill="none" stroke="${ST}" stroke-width=".75" stroke-linecap="round"/>`;
+        }
+    });
+
+    /* 6 — Thumb joint line */
+    out += `<line x1="3" y1="29" x2="8" y2="29" stroke="${ST}" stroke-width=".6" stroke-linecap="round"/>`;
+
+    /* 7 — Direction chevron (clap = down ↓, wave = up ↑) */
+    if (isClap) {
+        out += `<path d="M14,49 L24,54 L34,49" fill="none" stroke="${ST}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    } else if (isWave) {
+        out += `<path d="M14,54 L24,49 L34,54" fill="none" stroke="${ST}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    }
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 56" width="48" height="56">${out}</svg>`;
+}
+
+/* ══════════════════════════════════════
+   BUILD CHART SECTION
+══════════════════════════════════════ */
+function buildChartSection(notes) {
+    const container = document.getElementById('chartsContainer');
+    container.innerHTML = '';
+    canvases = []; rows = [];
+    buildPulseBar();
+
+    for (let i = 0; i < notes.length; i += 8) rows.push(notes.slice(i, i+8));
+
+    rows.forEach((rowNotes, ri) => {
+        const rowDiv = document.createElement('div');
+        rowDiv.className = 'chart-row';
+        rowDiv.id = 'row-' + ri;
+
+        const cvs = document.createElement('canvas');
+        cvs.width = CW; cvs.height = CH; cvs.className = 'chart-canvas';
+        rowDiv.appendChild(cvs);
+        canvases.push(cvs);
+
+        container.appendChild(rowDiv);
+    });
+
+    /* Build the single fixed hands row below the scroll frame */
+    buildFixedHandsRow();
+
+    /* Reset scroll instantly on content change */
+    const frame = document.getElementById('chartScrollFrame');
+    if (frame) frame.scrollTo({ top: 0, behavior: 'instant' });
+}
+
+function buildFixedHandsRow() {
+    const handsDiv = document.getElementById('fixedHandsRow');
+    if (!handsDiv) return;
+    handsDiv.innerHTML = '';
+    fixedHandEls = [];
+    handsDiv.style.width = CW + 'px';
+    const pat = currentTalaPattern || ADI_TALA;
+    const N = pat.length;
+    /* Center fewer-than-8 hands horizontally across the beat grid */
+    const offset = (8 - N) / 2;
+    pat.forEach((beat, bi) => {
+        const hd = document.createElement('div');
+        hd.className = 'hand';
+        hd.style.left = xFor(offset + bi) + 'px';
+        hd.innerHTML =
+            `<div class="hand-glow"></div>` +
+            buildHandSVG(beat.type) +
+            `<span class="hand-lbl">${beat.lbl}</span>` +
+            `<span class="hand-sol">${beat.sol}</span>` +
+            (beat.samam ? `<span class="hand-star">&#9733;</span>` : '');
+        handsDiv.appendChild(hd);
+        fixedHandEls.push(hd);
+    });
+}
+
+/* ══════════════════════════════════════
+   Y-AXIS LABEL FILTER
+   Returns the subset of labels to render
+   for the given pitch config, applying
+   per-mode name allowlists and a 14px
+   minimum spacing (priority-greedy).
+══════════════════════════════════════ */
+function getFilteredYLabels(pitchConfig) {
+    /* Per-mode allowlists */
+    let allowed, priorityOrder;
+    if (pitchConfig === PITCH_CONFIG_NT) {
+        allowed = new Set(['\u1E61','\u1E45','s','r','g','m','p','d','n','\u1E60']);
+        priorityOrder = ['s','\u1E60','p','m','g','r','d','n','\u1E61','\u1E45'];
+    } else if (pitchConfig === PITCH_CONFIG_MALAHARI) {
+        allowed = new Set(['Sa','Ri','Ma','Pa','Da',"Sa'"]);
+        priorityOrder = ['Sa',"Sa'",'Pa','Ma','Ri','Da'];
+    } else {
+        allowed = new Set(['Sa','Ri','Ga','Ma','Pa','Da','Ni',"Sa'"]);
+        priorityOrder = ['Sa',"Sa'",'Pa','Ma','Ga','Ri','Da','Ni'];
+    }
+
+    const yLocal = p => PT + (1 - (p - pitchConfig.min) / (pitchConfig.max - pitchConfig.min)) * PLOT_H;
+    const getPri  = name => { const i = priorityOrder.indexOf(name); return i === -1 ? 999 : i; };
+
+    /* Filter to allowed names, then sort by priority (best first) */
+    const filtered = pitchConfig.labels
+        .filter(yl => allowed.has(yl.name))
+        .sort((a, b) => getPri(a.name) - getPri(b.name));
+
+    /* Greedy selection: skip any label within 14px of an already-selected label */
+    const selected = [];
+    for (const yl of filtered) {
+        const y = yLocal(yl.pitch);
+        if (!selected.some(s => Math.abs(yLocal(s.pitch) - y) < 14)) {
+            selected.push(yl);
+        }
+    }
+    return selected;
+}
+
+/* ══════════════════════════════════════
+   DRAWING — compact 150px row
+══════════════════════════════════════ */
+function drawRow(ctx, rowNotes, rowIdx, totalRows, activeInRow, pulse) {
+    /* Background */
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, CW, CH);
+    ctx.fillStyle = '#FAFAF7'; ctx.fillRect(PL, PT, PLOT_W, PLOT_H);
+
+    /* Row label */
+    if (totalRows > 1) {
+        ctx.fillStyle = '#CD853F'; ctx.font = 'bold 9px Georgia, serif';
+        ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+        ctx.fillText('Row ' + (rowIdx + 1), 4, 3);
+    }
+
+    /* Horizontal grid (pitch levels) — draw faint lines for all labels */
+    currentPitchConfig.labels.forEach(yl => {
+        const y = yFor(yl.pitch);
+        ctx.beginPath(); ctx.strokeStyle = '#DDD4C8'; ctx.lineWidth = .8;
+        ctx.setLineDash([4,4]); ctx.moveTo(PL, y); ctx.lineTo(PL+PLOT_W, y); ctx.stroke();
+        ctx.setLineDash([]);
+    });
+
+    /* Sa octave boundary line — NT mode only, at main-octave Sa (pitch 6.0) */
+    if (currentPitchConfig === PITCH_CONFIG_NT) {
+        const saY = yFor(6.0);
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+        ctx.beginPath(); ctx.strokeStyle = '#C8A97E'; ctx.lineWidth = 1;
+        ctx.setLineDash([4,4]); ctx.moveTo(PL, saY); ctx.lineTo(PL+PLOT_W, saY); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+    }
+
+    /* Y-axis labels — filtered, minimum 14px spacing, priority-greedy */
+    const visibleYLabels = getFilteredYLabels(currentPitchConfig);
+    visibleYLabels.forEach(yl => {
+        const y = yFor(yl.pitch);
+        ctx.fillStyle = '#8B6914'; ctx.font = '500 10px Georgia, serif';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        ctx.fillText(yl.name, PL - 4, y);
+    });
+
+    /* Vertical grid + beat labels */
+    for (let b = 0; b <= 7; b++) {
+        const x = xFor(b);
+        ctx.beginPath(); ctx.strokeStyle = '#DDD4C8'; ctx.lineWidth = .8;
+        ctx.setLineDash([4,4]); ctx.moveTo(x, PT); ctx.lineTo(x, PT+PLOT_H); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#5C2E0A'; ctx.font = '10px Georgia, serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillText(b + 1, x, PT + PLOT_H + 28);  // beats 1–8, 28px below baseline
+    }
+
+    /* Adi Tala bar separators */
+    [3.5, 5.5].forEach(bx => {
+        const x = xFor(bx);
+        ctx.beginPath(); ctx.strokeStyle = '#B87030'; ctx.lineWidth = 1;
+        ctx.setLineDash([5,3]); ctx.moveTo(x, PT); ctx.lineTo(x, PT+PLOT_H); ctx.stroke();
+        ctx.setLineDash([]);
+    });
+
+    /* Axes */
+    ctx.strokeStyle = '#8B4513'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(PL, PT); ctx.lineTo(PL, PT+PLOT_H); ctx.lineTo(PL+PLOT_W, PT+PLOT_H); ctx.stroke();
+
+    /* Blue connecting line — 1.5px */
+    if (rowNotes.length > 1) {
+        ctx.beginPath(); ctx.strokeStyle = '#4A90D9'; ctx.lineWidth = 1.5; ctx.lineJoin = 'round';
+        rowNotes.forEach((note, i) => {
+            const x = xFor(i), y = yFor(note.pitch);
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+    }
+
+    /* Dots + labels — 5px radius, 11px font */
+    rowNotes.forEach((note, i) => {
+        const x = xFor(i), y = yFor(note.pitch);
+        const isActive  = i === activeInRow;
+        const isSustain = note.label === '-';
+
+        if (isActive) {
+            if (isSustain) {
+                /* Sustain active — gold halo, hollow dot */
+                const r   = 8 + pulse * 3;
+                const grd = ctx.createRadialGradient(x, y, 2, x, y, r);
+                grd.addColorStop(0,  'rgba(212,160,23,.45)');
+                grd.addColorStop(.5, 'rgba(212,160,23,.15)');
+                grd.addColorStop(1,  'rgba(212,160,23,0)');
+                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+                ctx.fillStyle = grd; ctx.fill();
+                ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2);
+                ctx.strokeStyle = '#D4A017'; ctx.lineWidth = 2; ctx.stroke();
+            } else {
+                /* Normal active — green glow */
+                const r   = 10 + pulse * 5;
+                const grd = ctx.createRadialGradient(x, y, 2, x, y, r);
+                grd.addColorStop(0,   'rgba(34,197,94,.55)');
+                grd.addColorStop(.5,  'rgba(34,197,94,.18)');
+                grd.addColorStop(1,   'rgba(34,197,94,0)');
+                ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI*2);
+                ctx.fillStyle = grd; ctx.fill();
+                ctx.beginPath(); ctx.arc(x, y, 7 + pulse*2, 0, Math.PI*2);
+                ctx.strokeStyle = `rgba(34,197,94,${.45-pulse*.25})`; ctx.lineWidth = 1.5; ctx.stroke();
+                ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI*2);
+                ctx.fillStyle = '#22C55E'; ctx.fill();
+                ctx.strokeStyle = '#15803D'; ctx.lineWidth = 1.2; ctx.stroke();
+            }
+        } else {
+            if (isSustain) {
+                /* Sustain inactive — hollow ring */
+                ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2);
+                ctx.strokeStyle = '#C0392B'; ctx.lineWidth = 2; ctx.stroke();
+            } else {
+                /* Normal inactive — filled red dot */
+                ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI*2);
+                ctx.fillStyle = '#E53E3E'; ctx.fill();
+                ctx.strokeStyle = '#B91C1C'; ctx.lineWidth = 1; ctx.stroke();
+            }
+        }
+
+        /* Note label — 10px below dot; flip to 10px ABOVE if within 18px of baseline */
+        if (!isSustain) {
+            const nearBaseline = (y >= PT + PLOT_H - 18);
+            ctx.font = '600 11px Georgia, serif';
+            ctx.fillStyle = '#C0392B';
+            ctx.globalAlpha = 0.9;
+            ctx.textAlign = 'center';
+            if (nearBaseline) {
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(note.label, x, y - 10);
+            } else {
+                ctx.textBaseline = 'top';
+                ctx.fillText(note.label, x, y + 10);
+            }
+            ctx.globalAlpha = 1.0;
+        }
+
+        /* Lyric syllable — above dot; flip below if near top; stagger if adjacent */
+        const lyr = note.lyric || '';
+        const nearTop = (y - PT < 26);
+        const lyricAboveOffset = (i % 2 === 0) ? -18 : -22;
+        const lyY = nearTop ? y + 22 : y + lyricAboveOffset;
+        if (isSustain || lyr === '-') {
+            /* Hold marker — dash in gray */
+            ctx.font = '12px Georgia, serif';
+            ctx.fillStyle = '#AAAAAA';
+            ctx.globalAlpha = 1.0;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText('\u2014', x, lyY);
+        } else if (lyr) {
+            if (isActive) {
+                ctx.font = 'italic 700 17px Georgia, serif';
+                ctx.fillStyle = '#D4A017';
+                ctx.globalAlpha = 1.0;
+                ctx.shadowColor = 'rgba(212,160,23,0.6)';
+                ctx.shadowBlur = 10;
+            } else {
+                ctx.font = 'italic 500 14px Georgia, serif';
+                ctx.fillStyle = '#2C5282';
+                ctx.globalAlpha = 0.85;
+            }
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(lyr, x, lyY);
+            ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0;
+            ctx.globalAlpha = 1.0;
+        }
+    });
+
+    /* Double bar line after last note on the LAST row */
+    if (rowIdx === totalRows - 1 && rowNotes.length > 0) {
+        const lastX = xFor(rowNotes.length - 1) + 8;
+        ctx.strokeStyle = 'rgba(139,69,19,0.7)';
+        ctx.lineWidth = 2; ctx.setLineDash([]);
+        ctx.beginPath(); ctx.moveTo(lastX,     PT); ctx.lineTo(lastX,     PT+PLOT_H); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(lastX + 4, PT); ctx.lineTo(lastX + 4, PT+PLOT_H); ctx.stroke();
+    }
+}
+
+/* Placeholder chart for Nottuswarams */
+function drawComingSoon(ctx, title, raga, lyrics) {
+    ctx.fillStyle = '#FFFFFF'; ctx.fillRect(0, 0, CW, CH);
+    ctx.fillStyle = '#F5F0E8'; ctx.fillRect(PL, PT, PLOT_W, PLOT_H);
+    Y_LABELS.forEach(yl => {
+        const y = yFor(yl.pitch);
+        ctx.beginPath(); ctx.strokeStyle = '#E8E0D4'; ctx.lineWidth = .8;
+        ctx.setLineDash([4,4]); ctx.moveTo(PL, y); ctx.lineTo(PL+PLOT_W, y); ctx.stroke(); ctx.setLineDash([]);
+    });
+    ctx.strokeStyle = '#5C2E0A'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(PL, PT); ctx.lineTo(PL, PT+PLOT_H); ctx.lineTo(PL+PLOT_W, PT+PLOT_H); ctx.stroke();
+
+    const cx = CW/2, cy = CH/2 - 6;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+
+    /* Song title */
+    ctx.fillStyle = '#4050A0'; ctx.font = 'bold 18px Georgia, serif';
+    ctx.fillText('\u266A ' + title, cx, cy - 24);
+
+    /* First lyric line */
+    if (lyrics && lyrics.length > 0) {
+        ctx.fillStyle = '#6070A8'; ctx.font = 'italic 13px Georgia, serif';
+        ctx.fillText(lyrics[0], cx, cy - 4);
+    }
+
+    /* "Full notation — coming soon" amber badge */
+    const badgeText = 'Full notation \u2014 coming soon';
+    ctx.font = 'bold 11px Georgia, serif';
+    const tw = ctx.measureText(badgeText).width;
+    const bpad = 10, bh = 20;
+    const bx = cx - tw/2 - bpad, by = cy + 14, bw = tw + bpad*2;
+    const r = 5;
+    ctx.beginPath();
+    ctx.moveTo(bx+r, by); ctx.lineTo(bx+bw-r, by);
+    ctx.arcTo(bx+bw, by, bx+bw, by+r, r);
+    ctx.lineTo(bx+bw, by+bh-r); ctx.arcTo(bx+bw, by+bh, bx+bw-r, by+bh, r);
+    ctx.lineTo(bx+r, by+bh); ctx.arcTo(bx, by+bh, bx, by+bh-r, r);
+    ctx.lineTo(bx, by+r); ctx.arcTo(bx, by, bx+r, by, r);
+    ctx.closePath();
+    ctx.fillStyle = '#FFF3CD'; ctx.fill();
+    ctx.strokeStyle = '#E6AC00'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = '#7A5200'; ctx.fillText(badgeText, cx, by + bh/2);
+}
+
+/* ══════════════════════════════════════
+   RENDER
+══════════════════════════════════════ */
+function render() {
+    if (placeholderMode) return;
+    const pulse = Math.sin(glowAngle) * 0.5 + 0.5;
+    rows.forEach((rowNotes, ri) => {
+        const ctx = canvases[ri].getContext('2d');
+        const gs  = ri * 8;
+        const activeInRow = (currentGlobalIdx >= gs && currentGlobalIdx < gs+8)
+            ? currentGlobalIdx - gs : -1;
+        drawRow(ctx, rowNotes, ri, rows.length, activeInRow, pulse);
+    });
+}
+
+/* ══════════════════════════════════════
+   HAND ACTIVATION
+══════════════════════════════════════ */
+function setActiveHand(gIdx) {
+    fixedHandEls.forEach(h => h.classList.remove('active'));
+    if (gIdx < 0) { pulseDots.forEach(d => d.classList.remove('active')); return; }
+    const N  = fixedHandEls.length || 8;
+    const ri = Math.floor(gIdx / 8);   // canvas rows always chunk at 8
+    const bi = gIdx % N;               // hand beat within tala cycle
+    if (!fixedHandEls[bi]) return;
+    const el = fixedHandEls[bi];
+    el.classList.remove('active'); void el.offsetWidth; el.classList.add('active');
+    setPulseDot(bi);
+    /* Auto-scroll: only when row bottom goes below container bottom */
+    const container = document.getElementById('chartScrollFrame');
+    const activeRow = document.getElementById('row-' + ri);
+    if (container && activeRow) {
+        const cRect = container.getBoundingClientRect();
+        const rRect = activeRow.getBoundingClientRect();
+        if (rRect.bottom > cRect.bottom) {
+            container.scrollBy({ top: rRect.top - cRect.top - 16, behavior: 'smooth' });
+        }
+        /* Never scroll up during playback */
+    }
+}
+
+/* ══════════════════════════════════════
+   ANIMATION ENGINE
+══════════════════════════════════════ */
+function animLoop() { glowAngle += 0.09; render(); rafId = requestAnimationFrame(animLoop); }
+
+function stopAll() {
+    if (rafId)    { cancelAnimationFrame(rafId); rafId = null; }
+    if (seqTimer) { clearTimeout(seqTimer); seqTimer = null; }
+}
+
+function playStep(idx) {
+    if (idx >= currentNotes.length) {
+        seqTimer = setTimeout(() => {
+            currentGlobalIdx = -1; setActiveHand(-1); stopAll(); render();
+            document.getElementById('playBtn').disabled = false;
+            document.getElementById('playBtn').textContent = '\u25BA\uFE0E\u00A0Play';
+        }, noteDuration);
+        return;
+    }
+    currentGlobalIdx = idx;
+    setActiveHand(idx);
+    playMetro(idx);
+    if (currentNotes[idx].label !== '-') {
+        playTone(currentNotes[idx].label);
+    } else if (lastPlayedFreq) {
+        playFreq(lastPlayedFreq, 0.18);   // 0.6× normal gain — natural decay of held note
+    }
+    seqTimer = setTimeout(() => playStep(idx + 1), noteDuration);
+}
+
+function startPlay() {
+    stopAll(); currentGlobalIdx = -1; setActiveHand(-1); glowAngle = 0;
+    document.getElementById('playBtn').disabled = true;
+    document.getElementById('playBtn').textContent = '\u25BA\uFE0E\u00A0Playing\u2026';
+    animLoop();
+    seqTimer = setTimeout(() => playStep(0), 100);
+}
+
+function doReset() {
+    placeholderMode = false;
+    lastPlayedFreq = null;
+    stopAllOscillators();
+    stopAll(); currentGlobalIdx = -1; setActiveHand(-1); glowAngle = 0;
+    const _frame = document.getElementById('chartScrollFrame');
+    if (_frame) _frame.scrollTo({ top: 0, behavior: 'smooth' });
+    render();
+    document.getElementById('playBtn').disabled = false;
+    document.getElementById('playBtn').textContent = '\u25BA\uFE0E\u00A0Play';
+}
+
+/* ══════════════════════════════════════
+   VERSE BOX HTML
+══════════════════════════════════════ */
+function buildLineHTML(notes) {
+    const parts = [];
+    notes.forEach((note, i) => {
+        const pos = (i % 8) + 1;
+        if (pos === 1 && i > 0) parts.push('<span class="dbl-bar"> ||</span>');
+        parts.push(`<span class="vnote">${note.label}</span>`);
+        if (pos === 4 || pos === 6) parts.push('<span class="sep">|</span>');
+    });
+    parts.push('<span class="dbl-bar"> ||</span>');
+    return parts.join('\u2009');
+}
+
+function buildVerseHTML(verse) {
+    let html = '';
+    if (verse.line1.length > 0)
+        html += `<div class="vline"><span class="vline-dir">\u2191</span>\u2009${buildLineHTML(verse.line1)}</div>`;
+    if (verse.line2 && verse.line2.length > 0)
+        html += `<div class="vline"><span class="vline-dir">\u2193</span>\u2009${buildLineHTML(verse.line2)}</div>`;
+    return html;
+}
+
+/* ══════════════════════════════════════
+   LESSON LOADING
+══════════════════════════════════════ */
+function loadVerse(gradeIdx, verseIdx) {
+    doReset();
+    activeGradeIdx = gradeIdx; activeVerseIdx = verseIdx;
+    const verse = LESSONS[gradeIdx].verses[verseIdx];
+    if (verse.comingSoon) { showToast('Coming Soon \u2014 notes being added!'); return; }
+    currentPitchConfig = (gradeIdx === 4) ? PITCH_CONFIG_MALAHARI : PITCH_CONFIG_DEFAULT;
+
+    /* Dynamic header */
+    const grade = LESSONS[gradeIdx];
+    const hRaga = verse.raga  || grade.raga  || 'Mayamalavagowla';
+    const hTala = verse.tala  || grade.tala  || 'Chatusra \u00B7 Adi';
+    document.getElementById('hdrRaga').textContent = hRaga;
+    document.getElementById('hdrTala').textContent = hTala;
+    document.getElementById('hdrTalaLabel').textContent = 'Jati \u0026 Thalam';
+
+    /* Tala hand pattern */
+    setTalaPattern(hTala);
+
+    currentNotes = [...verse.line1, ...(verse.line2 || [])];
+
+    // Verse label
+    let lblText = 'Grade ' + (gradeIdx+1) + ' \u00B7 ' + verse.title;
+    if (verse.raga) lblText += ' \u00B7 ' + verse.raga;
+    document.getElementById('verseLabel').textContent = lblText;
+
+    const nd = document.getElementById('verseNotes');
+    nd.style.fontSize = currentNotes.length > 24 ? '1.0rem' : currentNotes.length > 16 ? '1.15rem' : '1.3rem';
+    nd.style.letterSpacing = currentNotes.length > 16 ? '.1em' : '.17em';
+
+    // Alankaram tala info
+    if (verse.talaInfo) {
+        nd.innerHTML = `<span class="nottu-meta">${verse.talaInfo}</span>`;
+        if (verse.line1) nd.innerHTML += '<br>' + buildVerseHTML(verse);
+    } else {
+        nd.innerHTML = buildVerseHTML(verse);
+    }
+
+    buildChartSection(currentNotes);
+    render();
+
+    document.querySelectorAll('.verse-btn').forEach((btn, i) => {
+        btn.classList.toggle('active', i === verseIdx);
+    });
+}
+
+function loadNottuswaram(item) {
+    doReset();
+    /* Update header: center = song title, right = tala */
+    document.getElementById('hdrTitle').innerHTML =
+        item.title + '<br><span style="font-size:13px;color:#E8C97E;font-weight:normal;letter-spacing:.06em;">' +
+        item.raga + '</span>';
+    document.getElementById('hdrTalaLabel').textContent = 'Thalam';
+    document.getElementById('hdrTala').textContent = item.tala;
+    document.getElementById('hdrRaga').textContent = item.raga;
+    setTalaPattern(item.tala);
+
+    document.getElementById('verseLabel').textContent = item.title;
+    const nd = document.getElementById('verseNotes');
+    nd.style.letterSpacing = '.04em';
+
+    if (item.lines) {
+        /* Song has notation — render exactly like grades 1-5 */
+        currentPitchConfig = PITCH_CONFIG_NT;
+        currentNotes = item.lines;
+        nd.style.fontSize = '.88rem';
+        nd.innerHTML = item.lyrics.map(l =>
+            `<div class="vline"><span class="vline-dir">\u266A</span>\u2009${l}</div>`
+        ).join('');
+        buildChartSection(currentNotes);
+        render();
+    } else {
+        /* No notation yet — show placeholder */
+        currentPitchConfig = PITCH_CONFIG_DEFAULT;
+        nd.style.fontSize = '1rem';
+        nd.innerHTML = `<span class="nottu-meta">Raga: ${item.raga} &nbsp;\u00B7&nbsp; ${item.tala}</span>`;
+        const ph8 = Array(8).fill({label:'s', pitch:0.0});
+        buildChartSection(ph8);
+        currentNotes = ph8;
+        placeholderMode = true;
+        drawComingSoon(canvases[0].getContext('2d'), item.title, item.raga, item.lyrics);
+    }
+}
+
+function buildNottuswaramView(grade) {
+    const vt = document.getElementById('verseTabs');
+    vt.innerHTML = '';
+    vt.style.flexDirection = 'column';
+    document.getElementById('versePLabel').textContent = 'Songs';
+
+    /* Info banner */
+    const info = document.createElement('div');
+    info.className = 'nottu-info-banner';
+    info.textContent = '\u2139\uFE0F  ' + grade.info;
+    vt.appendChild(info);
+
+    /* Compact picker row: label + select dropdown */
+    const pickerRow = document.createElement('div');
+    pickerRow.className = 'nottu-picker-row';
+    const lbl = document.createElement('span');
+    lbl.className = 'nottu-picker-lbl';
+    lbl.textContent = 'Select:';
+    const sel = document.createElement('select');
+    sel.id = 'nottuswaramSelect';
+    grade.items.forEach((item, idx) => {
+        const opt = document.createElement('option');
+        opt.value = idx;
+        opt.textContent = item.title;
+        sel.appendChild(opt);
+    });
+    pickerRow.appendChild(lbl);
+    pickerRow.appendChild(sel);
+    vt.appendChild(pickerRow);
+
+    /* Single expanded card placeholder */
+    const card = document.createElement('div');
+    card.id = 'nottuswaramCard';
+    vt.appendChild(card);
+
+    function renderCard(item) {
+        const badgeRaga = item.diffRaga ? item.raga : 'Shankarabharanam';
+        const lyricsHTML = item.lyrics.map(l =>
+            `<span class="nc-lyric-line">${l}</span>`
+        ).join('');
+        card.innerHTML =
+            `<div class="nc-body">
+               <div class="nc-header">
+                 <div class="nc-main">
+                   <span class="nc-title" style="font-size:18px">${item.title}</span>
+                   <span class="nc-deity">Deity: ${item.deity} &nbsp;\u00B7&nbsp; ${item.tala}</span>
+                   <span class="nc-badge">Nottuswaram \u00B7 Muthuswami Dikshitar \u00B7 Raga: ${badgeRaga}</span>
+                 </div>
+                 <button class="nc-toggle">&#9662;&nbsp;Lyrics</button>
+               </div>
+             </div>
+             <div class="nc-lyrics" id="nlyr-active">${lyricsHTML}</div>`;
+        card.querySelector('.nc-toggle').addEventListener('click', e => {
+            e.stopPropagation();
+            const ld  = card.querySelector('.nc-lyrics');
+            const btn = card.querySelector('.nc-toggle');
+            const open = ld.classList.toggle('open');
+            btn.innerHTML = open ? '&#9652;&nbsp;Lyrics' : '&#9662;&nbsp;Lyrics';
+        });
+    }
+
+    sel.addEventListener('change', () => {
+        const item = grade.items[parseInt(sel.value, 10)];
+        renderCard(item);
+        loadNottuswaram(item);
+    });
+
+    /* Load first item by default */
+    renderCard(grade.items[0]);
+    loadNottuswaram(grade.items[0]);
+}
+
+function loadGrade(gradeIdx) {
+    doReset();
+    currentPitchConfig = PITCH_CONFIG_DEFAULT;
+    activeGradeIdx = gradeIdx; activeVerseIdx = 0;
+    /* Restore app title in header center */
+    document.getElementById('hdrTitle').innerHTML =
+        'N\u0101da Bodha<br><span style="font-size:13px;color:#E8C97E;font-weight:normal;letter-spacing:.06em;">Visual Carnatic Music \u00B7 Beginner Guide</span>';
+    const _g = LESSONS[gradeIdx];
+    document.getElementById('hdrTalaLabel').textContent = 'Jati \u0026 Thalam';
+    document.getElementById('hdrTala').textContent = _g.tala || 'Chatusra \u00B7 Adi';
+    document.getElementById('hdrRaga').textContent = _g.raga || 'Mayamalavagowla';
+    setTalaPattern(_g.tala || 'Chatusra · Adi');
+
+    document.querySelectorAll('.grade-tab').forEach((tab, i) => {
+        tab.classList.toggle('active', i === gradeIdx);
+    });
+
+    const grade = LESSONS[gradeIdx];
+    const vt = document.getElementById('verseTabs');
+    vt.style.flexDirection = '';   // reset to CSS row default
+
+    if (grade.nottuswaram) {
+        buildNottuswaramView(grade);
+        return;
+    }
+
+    document.getElementById('versePLabel').textContent = grade.isAlankaram ? 'Alankaram' : 'Verse';
+    vt.innerHTML = '';
+
+    // Grade description banner
+    if (grade.desc) {
+        const db = document.createElement('div');
+        db.className = 'grade-desc-banner';
+        db.textContent = grade.desc;
+        vt.appendChild(db);
+    }
+
+    if (grade.comingSoon || grade.verses.length === 0) {
+        const span = document.createElement('span');
+        span.className = 'coming-soon-banner';
+        span.textContent = '\u2728 ' + grade.name + ' \u2014 Coming Soon';
+        vt.appendChild(span);
+        return;
+    }
+
+    grade.verses.forEach((v, vi) => {
+        const btn = document.createElement('button');
+        btn.className = 'verse-btn' + (v.comingSoon ? ' v-soon' : '');
+        btn.textContent = v.title;
+        btn.onclick = () => {
+            if (v.comingSoon) {
+                const info = v.talaInfo ? v.talaInfo + ' — notation coming soon' : 'Coming Soon!';
+                showToast(info); return;
+            }
+            loadVerse(gradeIdx, vi);
+        };
+        vt.appendChild(btn);
+    });
+
+    // Load first non-comingSoon verse
+    const firstOk = grade.verses.findIndex(v => !v.comingSoon);
+    if (firstOk >= 0) loadVerse(gradeIdx, firstOk);
+}
+
+/* ══════════════════════════════════════
+   TOAST
+══════════════════════════════════════ */
+let toastTimer = null;
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+/* ══════════════════════════════════════
+   CONTROLS + INIT
+══════════════════════════════════════ */
+document.getElementById('playBtn').addEventListener('click', async () => {
+    if (!audioCtx || audioCtx.state === 'closed') {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        window.nadaAudioCtx = audioCtx;
+    }
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
+    startPlay();
+});
+document.getElementById('resetBtn').addEventListener('click', doReset);
+document.getElementById('muteBtn').addEventListener('click', () => {
+    muted = !muted;
+    const btn = document.getElementById('muteBtn');
+    btn.textContent = muted ? '\uD83D\uDD07\u00A0Muted' : '\uD83D\uDD0A\u00A0Sound';
+    btn.classList.toggle('is-muted', muted);
+});
+document.getElementById('metroBtn').addEventListener('click', async () => {
+    metroOn = !metroOn;
+    const btn = document.getElementById('metroBtn');
+    btn.textContent = metroOn ? '\uD83E\uDD41\u00A0Metro: ON' : '\uD83E\uDD41\u00A0Metro: OFF';
+    btn.classList.toggle('metro-on', metroOn);
+    if (metroOn) {
+        if (!audioCtx || audioCtx.state === 'closed') {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            window.nadaAudioCtx = audioCtx;
+        }
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+    }
+});
+
+document.getElementById('shrutiBtn').addEventListener('click', async () => {
+    shrutiOn = !shrutiOn;
+    const btn = document.getElementById('shrutiBtn');
+    btn.textContent = shrutiOn ? '\uD83C\uDFB5\u00A0Shruti: ON' : '\uD83C\uDFB5\u00A0Shruti: OFF';
+    btn.classList.toggle('shruti-on', shrutiOn);
+    if (shrutiOn) {
+        if (!audioCtx || audioCtx.state === 'closed') {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            window.nadaAudioCtx = audioCtx;
+        }
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+        startShruti(parseFloat(document.getElementById('shrutiSelect').value));
+    } else stopShruti();
+});
+document.getElementById('shrutiSelect').addEventListener('change', function() {
+    if (shrutiOn) startShruti(parseFloat(this.value));
+});
+
+/* ── PULSE BAR ── */
+let pulseDots = [];
+
+function buildPulseBar() {
+    const outer = document.getElementById('pulseBarOuter');
+    outer.innerHTML = '';
+    pulseDots = [];
+    const N = currentTalaPattern ? currentTalaPattern.length : 8;
+    for (let i = 0; i < N; i++) {
+        const d = document.createElement('div');
+        d.className = 'pulse-dot';
+        outer.appendChild(d);
+        pulseDots.push(d);
+    }
+}
+function setTalaPattern(talaStr) {
+    const t = (talaStr || '').toLowerCase();
+    if      (t.includes('roopaka') || t.includes('rupaka')) currentTalaPattern = TALA_ROOPAKA;
+    else if (t.includes('triputa'))                          currentTalaPattern = TALA_TRIPUTA;
+    else if (t.includes('eka'))                              currentTalaPattern = TALA_EKA;
+    else                                                     currentTalaPattern = ADI_TALA;
+}
+
+function setPulseDot(beatIdx) {
+    pulseDots.forEach((d, i) => {
+        d.classList.remove('active');
+        if (i === beatIdx) {
+            void d.offsetWidth;   // reflow to restart animation
+            d.classList.add('active');
+        }
+    });
+}
+
+function kalaForBpm(bpm) {
+    if (bpm <= 60)  return 'Vilamba Kala';
+    if (bpm <= 100) return 'Madhyama Kala';
+    if (bpm <= 120) return 'Dhruta Kala';
+    return 'Ati-Dhruta Kala';
+}
+
+function updateBPM() {
+    noteDuration = Math.round(60000 / currentBPM * (1 / currentMult));
+    document.getElementById('bpmDisplay').textContent =
+        '\u2669 = ' + currentBPM + ' BPM \u00B7 ' + kalaForBpm(currentBPM);
+}
+
+/* Kala buttons */
+const KALA_MAP = {
+    '0.5': {mult:0.5},
+    '1':   {mult:1},
+    '2':   {mult:2},
+    '4':   {mult:4},
+};
+document.querySelectorAll('.speed-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const k = KALA_MAP[btn.dataset.mult];
+        if (!k) return;
+        currentMult = k.mult;
+        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateBPM();
+    });
+});
+
+/* BPM select */
+document.getElementById('bpmSelect').addEventListener('change', function () {
+    currentBPM = parseInt(this.value, 10);
+    updateBPM();
+});
+
+/* Grade tabs */
+(function buildGradeTabs() {
+    const gt = document.getElementById('gradeTabs');
+    LESSONS.forEach((g, gi) => {
+        const tab = document.createElement('button');
+        tab.className = 'grade-tab' + (g.nottuswaram ? ' nottu-tab' : '');
+        tab.innerHTML = `<span class="g-num">Grade ${gi+1}</span><span class="g-name">${g.name}</span>`;
+        tab.onclick = () => loadGrade(gi);
+        gt.appendChild(tab);
+    });
+})();
+
+buildPulseBar();
+document.getElementById('bpmSelect').value = String(currentBPM);
+updateBPM();
+loadGrade(0);
+
+/* Safari audio unlock: play a silent buffer on first touch */
+document.addEventListener('touchstart', function unlockAudio() {
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        window.nadaAudioCtx = audioCtx;
+    }
+    try {
+        const buf = audioCtx.createBuffer(1, 1, 22050);
+        const src = audioCtx.createBufferSource();
+        src.buffer = buf; src.connect(audioCtx.destination); src.start(0);
+        audioCtx.resume();
+    } catch(e) {}
+    document.removeEventListener('touchstart', unlockAudio);
+}, false);
+
+})();
+</script>
+</body>
+</html>
