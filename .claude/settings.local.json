@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(node --check /Users/rajunn/GenAI/VisualMusic/lessonData.js)",
-      "Bash(node:*)"
+      "Bash(node:*)",
+      "Bash(python3 -c \" import sys, json lines = sys.stdin.readlines\\(\\) for i, line in enumerate\\(lines\\): try: obj = json.loads\\(line\\) if obj.get\\('type'\\) == 'user': content = obj.get\\('message', {}\\).get\\('content', ''\\) if isinstance\\(content, list\\): for c in content: if isinstance\\(c, dict\\) and c.get\\('type'\\) == 'text': text = c.get\\('text', ''\\) if 'sargam notation' in text.lower\\(\\) or 'remaining nottuswaram' in text.lower\\(\\) or 'add sargam' in text.lower\\(\\): print\\(f'=== LINE {i} ==='\\) print\\(text[:10000]\\) print\\('...'\\) except: pass \")",
+      "Bash(python3 -c \" import sys, json lines = sys.stdin.readlines\\(\\) print\\(f'Total lines: {len\\(lines\\)}'\\) for i, line in enumerate\\(lines[-20:], len\\(lines\\)-20\\): try: obj = json.loads\\(line\\) msg_type = obj.get\\('type', 'unknown'\\) content = obj.get\\('message', {}\\).get\\('content', ''\\) if isinstance\\(content, list\\): for c in content: if isinstance\\(c, dict\\) and c.get\\('type'\\) == 'text': text = c.get\\('text', ''\\) print\\(f'LINE {i} [{msg_type}]: {text[:200]}'\\) elif isinstance\\(content, str\\): print\\(f'LINE {i} [{msg_type}]: {content[:200]}'\\) except Exception as e: print\\(f'LINE {i} ERROR: {e}'\\) \")",
+      "Bash(grep -v \"style\\\\|script\\\\|LESSONS\\\\|innerHTML\\\\|Grade \\\\${\")",
+      "Bash(python3:*)",
+      "Bash(grep:*)"
     ]
   }
 }
