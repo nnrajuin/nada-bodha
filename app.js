@@ -295,9 +295,6 @@ function loadVerse(gradeIdx, verseIdx) {
 
 function loadNottuswaram(item) {
     doReset();
-    document.getElementById('hdrTitle').innerHTML =
-        item.title + '<br><span style="font-size:13px;color:#E8C97E;font-weight:normal;letter-spacing:.06em;">' +
-        item.raga + '</span>';
     document.getElementById('hdrTalaLabel').textContent = 'Thalam';
     document.getElementById('hdrTala').textContent      = item.tala;
     document.getElementById('hdrRaga').textContent      = item.raga;
